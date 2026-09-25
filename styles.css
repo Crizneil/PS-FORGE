@@ -441,6 +441,83 @@ textarea:focus-visible {
     sans-serif;
   letter-spacing: 0.03em;
 }
+.exercise-guide {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 116px;
+  margin: 2px 0 15px;
+  padding: 10px 12px;
+  background: linear-gradient(
+    120deg,
+    rgba(107, 231, 255, 0.08),
+    rgba(170, 139, 255, 0.07)
+  );
+  border: 1px solid rgba(107, 231, 255, 0.14);
+}
+.guide-art {
+  flex: 0 0 108px;
+  height: 102px;
+  display: grid;
+  place-items: center;
+  background: rgba(4, 17, 26, 0.52);
+  border: 1px solid rgba(107, 231, 255, 0.18);
+}
+.guide-art svg {
+  width: 100%;
+  height: 100%;
+}
+.guide-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.guide-fallback[hidden] {
+  display: none;
+}
+.guide-art g {
+  fill: none;
+  stroke: var(--cyan);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+.guide-art .skin {
+  fill: rgba(238, 248, 255, 0.12);
+  stroke: var(--text);
+  stroke-width: 2.5;
+}
+.guide-art .muscle {
+  fill: rgba(255, 184, 107, 0.9);
+  stroke: var(--orange);
+  stroke-width: 4;
+}
+.guide-art .equipment {
+  stroke: var(--violet);
+}
+.guide-art .weight {
+  fill: var(--orange);
+  stroke: var(--orange);
+}
+.guide-label {
+  color: var(--cyan);
+  font-size: 9px;
+  letter-spacing: 0.14em;
+}
+.exercise-guide p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+.guide-source {
+  display: block;
+  margin-top: 7px;
+  color: var(--violet);
+  font-size: 8px;
+  letter-spacing: 0.08em;
+}
 .target {
   color: var(--muted);
   margin: 5px 0 14px;
@@ -633,6 +710,50 @@ textarea:focus-visible {
 }
 .setting-row small {
   display: block;
+  color: var(--muted);
+  font-size: 10px;
+}
+.warmup-list {
+  display: grid;
+  gap: 8px;
+  margin-top: 14px;
+}
+.warmup-item {
+  display: grid;
+  grid-template-columns: 58px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 7px;
+  border: 1px solid var(--line);
+  background: rgba(4, 17, 26, 0.52);
+  cursor: pointer;
+}
+.warmup-item:has(input:checked) {
+  border-color: var(--lime);
+  background: rgba(182, 243, 107, 0.08);
+}
+.warmup-item img {
+  width: 58px;
+  height: 52px;
+  object-fit: cover;
+  border: 1px solid rgba(107, 231, 255, 0.2);
+}
+.warmup-item strong,
+.warmup-item small {
+  display: block;
+}
+.warmup-phase {
+  margin-bottom: 4px;
+  color: var(--cyan) !important;
+  font-size: 8px !important;
+  letter-spacing: 0.08em;
+}
+.warmup-item strong {
+  color: var(--text);
+  font-size: 12px;
+}
+.warmup-item small {
+  margin-top: 4px;
   color: var(--muted);
   font-size: 10px;
   margin-top: 3px;
