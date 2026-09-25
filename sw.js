@@ -1,9 +1,9 @@
-const CACHE_NAME = "forge-system-v2";
+const CACHE_NAME = "forge-system-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
   "./styles.css",
-  "./app.js?v=2",
+  "./app.js?v=3",
   "./manifest.json",
 ];
 

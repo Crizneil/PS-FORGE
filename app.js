@@ -200,6 +200,83 @@ function button(text, action, className = "ghost-btn") {
   return `<button class="${className}" data-action="${action}">${text}</button>`;
 }
 
+const exerciseGuides = {
+  "leg-press": {
+    type: "press",
+    target: "QUADS + GLUTES",
+    image: "Leg_Press/0.jpg",
+    cue: "Drive through your mid-foot; keep your knees tracking over your toes.",
+  },
+  "leg-curl": {
+    type: "curl",
+    target: "HAMSTRINGS",
+    image: "Lying_Leg_Curls/0.jpg",
+    cue: "Curl smoothly and squeeze your hamstrings without lifting your hips.",
+  },
+  "incline-press": {
+    type: "press",
+    target: "UPPER CHEST",
+    image: "Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg",
+    cue: "Lower with control and press up while keeping your shoulder blades set.",
+  },
+  "lat-pulldown": {
+    type: "pull",
+    target: "LATS",
+    image: "Wide-Grip_Lat_Pulldown/0.jpg",
+    cue: "Pull your elbows down toward your ribs; avoid swinging your torso.",
+  },
+  "transverse-row": {
+    type: "row",
+    target: "MID-BACK",
+    image: "Seated_Cable_Rows/0.jpg",
+    cue: "Brace your core and pull your elbows back, squeezing between your shoulder blades.",
+  },
+  "lateral-raise": {
+    type: "raise",
+    target: "SIDE DELTS",
+    image: "Side_Lateral_Raise/0.jpg",
+    cue: "Lift with soft elbows until your hands reach shoulder height.",
+  },
+  "preacher-curl": {
+    type: "curl",
+    target: "BICEPS",
+    image: "Preacher_Curl/0.jpg",
+    cue: "Keep your upper arms on the pad and lower the weight slowly.",
+  },
+  pushdown: {
+    type: "pushdown",
+    target: "TRICEPS",
+    image: "Triceps_Pushdown/0.jpg",
+    cue: "Pin your elbows to your sides and press the handle down to full extension.",
+  },
+  "ab-crunch": {
+    type: "crunch",
+    target: "ABS",
+    image: "Cable_Crunch/0.jpg",
+    cue: "Curl your ribs toward your pelvis; do not pull on your neck.",
+  },
+};
+
+function renderExerciseGuide(exercise) {
+  const guide = exerciseGuides[exercise.id] || {
+    type: "press",
+    target: "FULL BODY",
+    image: "Leg_Press/0.jpg",
+    cue: "Move with control and keep the working muscles engaged.",
+  };
+  const drawings = {
+    press: `<circle cx="53" cy="21" r="6" class="skin"/><path d="M53 28c-8 5-9 16-5 25l5 8 5-8c4-9 3-20-5-25Z" class="skin"/><path d="M48 38 31 31m27 7 17-7M49 60 39 84m19-24 10 24" class="skin"/><path d="M45 40c3 4 5 7 8 8 3-1 5-4 8-8" class="muscle"/><path d="M25 29h56M31 25v8m44-8v8M38 29 53 17m29 12L67 17" class="equipment"/><path d="M38 29h30" class="equipment"/>`,
+    curl: `<circle cx="53" cy="20" r="6" class="skin"/><path d="M53 27c-8 5-9 17-5 26l5 8 5-8c4-9 3-21-5-26Z" class="skin"/><path d="M49 38 37 51l-8 1m24-14 12 13 8 1M49 61 39 85m19-24 10 24" class="skin"/><path d="M35 48c4 2 6 5 8 8m26-8c-4 2-6 5-8 8" class="muscle"/><path d="M25 58h56" class="equipment"/><circle cx="20" cy="58" r="5" class="weight"/><circle cx="86" cy="58" r="5" class="weight"/><path d="M30 56h46" class="equipment"/>`,
+    pull: `<circle cx="53" cy="37" r="6" class="skin"/><path d="M53 44c-8 5-9 15-5 24l5 7 5-7c4-9 3-19-5-24Z" class="skin"/><path d="M48 51 31 35m27 16 17-16M50 74 39 90m17-16 10 16" class="skin"/><path d="M43 49c3 5 6 8 10 9 4-1 7-4 10-9" class="muscle"/><path d="M20 14h66M31 14v12m44-12v12M31 14l22 31m22-31L53 45" class="equipment"/><path d="M39 24h28" class="equipment"/>`,
+    row: `<circle cx="60" cy="20" r="6" class="skin"/><path d="M58 27 41 51l14 8 20-17" class="skin"/><path d="M48 55 31 82m15-23 19 21" class="skin"/><path d="M51 35c4 6 10 8 16 7" class="muscle"/><path d="M75 42 49 56m28-12 12-8" class="equipment"/><circle cx="91" cy="34" r="5" class="weight"/><path d="M27 84h61" class="equipment"/>`,
+    raise: `<circle cx="53" cy="21" r="6" class="skin"/><path d="M53 28c-8 5-9 16-5 25l5 8 5-8c4-9 3-20-5-25Z" class="skin"/><path d="M49 38 25 48m32-10 24 10M49 61 39 85m19-24 10 24" class="skin"/><path d="M44 39c4 3 5 5 9 5 4 0 5-2 9-5" class="muscle"/><path d="M25 48h-9m65 0h9" class="equipment"/><circle cx="11" cy="48" r="5" class="weight"/><circle cx="97" cy="48" r="5" class="weight"/>`,
+    pushdown: `<circle cx="53" cy="36" r="6" class="skin"/><path d="M53 43c-8 5-9 15-5 24l5 7 5-7c4-9 3-19-5-24Z" class="skin"/><path d="M48 51 36 65m24-14 12 14M50 74 39 90m17-16 10 16" class="skin"/><path d="M43 49c3 5 6 8 10 9 4-1 7-4 10-9" class="muscle"/><path d="M23 14h60M35 14v11m36-11v11M35 25l18 33m18-33L53 58M41 58h24" class="equipment"/>`,
+    crunch: `<circle cx="73" cy="35" r="6" class="skin"/><path d="M68 42 43 56l13 11 23-15" class="skin"/><path d="M47 63 28 80m14-19 19 18" class="skin"/><path d="M52 53c5 2 10 4 15 1m-12 8c4 2 7 3 11 1" class="muscle"/><path d="M22 82h66M53 62l17 17" class="equipment"/>`,
+  };
+  const imageUrl = `https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${guide.image}`;
+  return `<div class="exercise-guide"><div class="guide-art"><img src="${imageUrl}" alt="${exercise.name} exercise photo" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><svg class="guide-fallback" viewBox="0 0 108 102" role="img" aria-label="${exercise.name} anatomy illustration" hidden><g>${drawings[guide.type]}</g></svg></div><div><small class="guide-label">TARGET MUSCLES // ${guide.target}</small><p>${guide.cue}</p><small class="guide-source">PHOTO: FREE EXERCISE DB</small></div></div>`;
+}
+
 function render() {
   document
     .querySelectorAll(".nav-item")
@@ -242,7 +319,7 @@ function renderWorkout() {
   };
   const exercises = state.exercises.map((exercise) => {
     const sets = active.sets.filter((set) => set.exerciseId === exercise.id);
-    return `<article class="exercise-card ${sets.length ? "active" : ""}" data-exercise="${exercise.id}"><div class="exercise-top"><div><h2>${exercise.name.toUpperCase()}</h2><p class="target">TARGET: ${exercise.sets}${exercise.maxSets ? `-${exercise.maxSets}` : ""} SETS x ${exercise.min}-${exercise.max}</p></div><span class="accent tiny">${sets.length}/${exercise.sets}</span></div><div class="previous"><small>PREVIOUS RESULT</small><p>${previousText(exercise.id)}</p></div><div class="set-controls"><label class="input-label">WEIGHT (${state.profile.unit})<input class="number-input weight-input" type="number" min="0" step="0.5" value="${sets.length ? sets.at(-1).weight : lastForExercise(exercise.id)[0]?.weight || ""}" placeholder="0"></label><label class="input-label">REPS<input class="number-input reps-input" type="number" min="0" value="${sets.length ? sets.at(-1).reps : exercise.min}" placeholder="${exercise.min}"></label></div>${sets.length ? `<div class="sets-row">${sets.map((set, index) => `<span class="set-chip done">${index + 1}</span>`).join("")}</div>` : ""}<button class="complete-btn ${sets.length >= exercise.sets ? "done" : ""}" data-action="complete-set" data-id="${exercise.id}">${sets.length >= exercise.sets ? "SET COMPLETE - ADD SET" : "COMPLETE SET"}</button>${renderRestFor(exercise.id)}</article>`;
+    return `<article class="exercise-card ${sets.length ? "active" : ""}" data-exercise="${exercise.id}"><div class="exercise-top"><div><h2>${exercise.name.toUpperCase()}</h2><p class="target">TARGET: ${exercise.sets}${exercise.maxSets ? `-${exercise.maxSets}` : ""} SETS x ${exercise.min}-${exercise.max}</p></div><span class="accent tiny">${sets.length}/${exercise.sets}</span></div>${renderExerciseGuide(exercise)}<div class="previous"><small>PREVIOUS RESULT</small><p>${previousText(exercise.id)}</p></div><div class="set-controls"><label class="input-label">WEIGHT (${state.profile.unit})<input class="number-input weight-input" type="number" min="0" step="0.5" value="${sets.length ? sets.at(-1).weight : lastForExercise(exercise.id)[0]?.weight || ""}" placeholder="0"></label><label class="input-label">REPS<input class="number-input reps-input" type="number" min="0" value="${sets.length ? sets.at(-1).reps : exercise.min}" placeholder="${exercise.min}"></label></div>${sets.length ? `<div class="sets-row">${sets.map((set, index) => `<span class="set-chip done">${index + 1}</span>`).join("")}</div>` : ""}<button class="complete-btn ${sets.length >= exercise.sets ? "done" : ""}" data-action="complete-set" data-id="${exercise.id}">${sets.length >= exercise.sets ? "SET COMPLETE - ADD SET" : "COMPLETE SET"}</button>${renderRestFor(exercise.id)}</article>`;
   });
   return `<section class="page"><div class="workout-head page-heading"><div><p class="eyebrow">ACTIVE QUEST</p><h1>FULL BODY</h1><p>${formatDate(active.startedAt)} // ${active.sets.length} WORKING SETS</p></div>${active.started ? '<span class="timer-pill" id="session-time">00:00</span>' : ""}</div><div class="panel" style="margin-bottom:14px"><div class="action-row">${button("GYM MODE", "gym-mode", "primary-btn")}${button("END WORKOUT", "end-workout", "ghost-btn")}</div></div><div class="exercise-list">${exercises.join("")}</div></section>`;
 }
@@ -313,8 +390,63 @@ function startWorkout() {
   renderWarmupModal();
 }
 function renderWarmupModal() {
+  const warmups = [
+    {
+      phase: "01 // RAISE TEMPERATURE",
+      title: "EASY CARDIO",
+      detail: "5-7 minutes // brisk walk or bike",
+      image: "Walking_Treadmill/0.jpg",
+    },
+    {
+      phase: "02 // MOBILITY",
+      title: "ARM CIRCLES",
+      detail: "10 forward + 10 backward",
+      image: "Arm_Circles/0.jpg",
+    },
+    {
+      phase: "03 // DYNAMIC LOWER BODY",
+      title: "BODYWEIGHT SQUAT",
+      detail: "2 sets // 10 controlled reps",
+      image: "Bodyweight_Squat/0.jpg",
+    },
+    {
+      phase: "03 // DYNAMIC LOWER BODY",
+      title: "WALKING LUNGE",
+      detail: "1 set // 8 reps each leg",
+      image: "Bodyweight_Walking_Lunge/0.jpg",
+    },
+    {
+      phase: "04 // CORE ACTIVATION",
+      title: "PLANK",
+      detail: "2 sets // 20-30 seconds",
+      image: "Plank/0.jpg",
+    },
+    {
+      phase: "05 // SPECIFIC RAMP-UP",
+      title: "LEG PRESS",
+      detail: "1 light set // 10-12 reps",
+      image: "Leg_Press/0.jpg",
+    },
+    {
+      phase: "05 // SPECIFIC RAMP-UP",
+      title: "INCLINE PRESS",
+      detail: "1 light set // 10-12 reps",
+      image: "Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg",
+    },
+    {
+      phase: "05 // SPECIFIC RAMP-UP",
+      title: "LAT PULLDOWN",
+      detail: "1 light set // 10-12 reps",
+      image: "Wide-Grip_Lat_Pulldown/0.jpg",
+    },
+  ];
   document.querySelector("#modal-root").innerHTML =
-    `<div class="modal-backdrop"><div class="modal"><p class="eyebrow">PRE-QUEST PROTOCOL</p><h2>WARM-UP</h2><p>Prime the system before working sets. Warm-up activity is not included in volume.</p><div class="settings-list"><div class="setting-row"><label>5 minutes easy cardio</label><input type="checkbox"></div><div class="setting-row"><label>Light warm-up set for Leg Press</label><input type="checkbox"></div><div class="setting-row"><label>Light warm-up set for Incline Press</label><input type="checkbox"></div><div class="setting-row"><label>Light warm-up set for Lat Pulldown</label><input type="checkbox"></div></div><div class="action-row" style="margin-top:16px">${button("SKIP WARM-UP", "close-modal", "ghost-btn")}<button class="primary-btn" type="button" data-action="close-modal">BEGIN QUEST</button></div></div></div>`;
+    `<div class="modal-backdrop"><div class="modal"><p class="eyebrow">PRE-QUEST PROTOCOL</p><h2>FULL BODY WARM-UP</h2><p>Complete this sequence in order. Use easy effort, controlled movement, and stop if you feel sharp pain. Warm-up work is not included in volume.</p><div class="warmup-list">${warmups
+      .map(
+        (warmup) =>
+          `<label class="warmup-item"><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${warmup.image}" alt="${warmup.title} warm-up" loading="lazy"><span><small class="warmup-phase">${warmup.phase}</small><strong>${warmup.title}</strong><small>${warmup.detail}</small></span><input type="checkbox"></label>`,
+      )
+      .join("")}</div><div class="action-row" style="margin-top:16px">${button("SKIP WARM-UP", "close-modal", "ghost-btn")}<button class="primary-btn" type="button" data-action="close-modal">BEGIN QUEST</button></div></div></div>`;
 }
 function completeSet(button) {
   if (!state.activeWorkout) startWorkout();
@@ -481,7 +613,7 @@ function drawChart() {
   });
 }
 
-app.addEventListener("click", (event) => {
+document.addEventListener("click", (event) => {
   const target = event.target.closest("[data-action]");
   if (!target) return;
   const action = target.dataset.action;
