@@ -1,0 +1,17 @@
+{
+  "name": "Forge System Workout Tracker",
+  "short_name": "Forge",
+  "description": "Offline-first personal workout tracker.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#07101b",
+  "theme_color": "#07101b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='42' fill='%2307101b'/%3E%3Cpath d='M42 96h108M60 60v72M132 60v72M28 78v36M164 78v36' stroke='%236be7ff' stroke-width='14' stroke-linecap='round'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}
