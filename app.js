@@ -1,154 +1,396 @@
 const STORAGE_KEY = "forge-system-state-v1";
-const defaultExercises = [
-  { id: "leg-press", name: "Leg Press", sets: 2, min: 8, max: 12, rest: 150 },
+const WORKOUT_ORDER = ["A", "B", "C"];
+const EXERCISE_IMAGE_BASE = "https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/";
+const exercisePhotos = {
+  squat: "Barbell_Full_Squat",
+  "leg-press": "Leg_Press",
+  "leg-curl": "Lying_Leg_Curls",
+  "incline-press": "Barbell_Incline_Bench_Press_-_Medium_Grip",
+  "chest-press": "Leverage_Chest_Press",
+  "lat-pulldown": "Wide-Grip_Lat_Pulldown",
+  "transverse-row": "Seated_Cable_Rows",
+  "single-arm-lat": "One_Arm_Lat_Pulldown",
+  "straight-arm-pulldown": "Rope_Straight-Arm_Pulldown",
+  "dumbbell-lateral": "Side_Lateral_Raise",
+  "cable-lateral": "Cable_Seated_Lateral_Raise",
+  "shoulder-press": "Dumbbell_Shoulder_Press",
+  "rear-delt-fly": "Cable_Rear_Delt_Fly",
+  "preacher-curl": "Preacher_Curl",
+  pushdown: "Triceps_Pushdown",
+  "ab-crunch": "Cable_Crunch",
+};
+
+const catalog = [
   {
-    id: "leg-curl",
-    name: "Leg Curl",
-    sets: 1,
-    maxSets: 2,
-    min: 8,
-    max: 12,
-    rest: 105,
-  },
-  {
-    id: "incline-press",
-    name: "Incline Press",
+    id: "squat",
+    name: "Squat",
+    target: "Legs — thighs and glutes",
+    category: "Legs",
     sets: 2,
     min: 8,
     max: 12,
     rest: 150,
+    visual: "squat",
+    start: "Stand with feet about shoulder-width apart; brace gently and keep your whole foot on the floor.",
+    movement: "Bend your knees and hips to a comfortable depth, then stand by pushing the floor away.",
+    tips: ["Keep your knees pointing in the same direction as your toes.", "Use a depth you can control without pain."],
+    mistake: "Letting your heels lift or knees collapse inward.",
+    alternatives: ["Leg Press", "Goblet Squat"],
+  },
+  {
+    id: "leg-press",
+    name: "Leg Press",
+    target: "Legs — thighs and glutes",
+    category: "Legs",
+    sets: 2,
+    min: 8,
+    max: 12,
+    rest: 150,
+    visual: "squat",
+    start: "Sit against the pad with feet shoulder-width on the platform.",
+    movement: "Lower the platform with control, then press through your feet without locking your knees.",
+    tips: ["Keep your lower back against the seat.", "Use a comfortable, pain-free range."],
+    mistake: "Letting your hips curl off the seat or knees snap straight.",
+    alternatives: ["Squat", "Goblet Squat"],
+  },
+  {
+    id: "leg-curl",
+    name: "Leg Curl",
+    target: "Back of thighs — hamstrings",
+    category: "Legs",
+    sets: 2,
+    min: 10,
+    max: 15,
+    rest: 105,
+    visual: "curl",
+    start: "Set the machine pad just above your heels and brace against the bench.",
+    movement: "Bend your knees to bring the pad toward you, then lower it slowly.",
+    tips: ["Keep your hips against the pad.", "Pause briefly when your hamstrings tighten."],
+    mistake: "Swinging the weight or lifting your hips.",
+    alternatives: ["Seated Leg Curl", "Stability-Ball Leg Curl"],
+  },
+  {
+    id: "incline-press",
+    name: "Incline Chest Press",
+    target: "Upper chest",
+    category: "Chest",
+    sets: 2,
+    min: 8,
+    max: 12,
+    rest: 150,
+    visual: "press",
+    start: "Set the bench to a low incline. Sit back with your feet planted and handles near your upper chest.",
+    movement: "Press up and slightly inward, then lower the handles slowly to the start.",
+    tips: ["Keep your shoulder blades gently against the bench.", "Keep wrists stacked over elbows."],
+    mistake: "Bouncing the weight or arching your back excessively.",
+    alternatives: ["Incline Dumbbell Press", "Incline Push-up"],
+  },
+  {
+    id: "chest-press",
+    name: "Chest Press",
+    target: "Chest",
+    category: "Chest",
+    sets: 3,
+    min: 8,
+    max: 15,
+    rest: 120,
+    visual: "press",
+    start: "Sit with your back supported and handles level with the middle of your chest.",
+    movement: "Press forward smoothly, then return until you feel a gentle chest stretch.",
+    tips: ["Keep your feet planted.", "Move in a range that feels comfortable for your shoulders."],
+    mistake: "Shrugging your shoulders or letting the handles slam back.",
+    alternatives: ["Dumbbell Bench Press", "Pec Deck"],
   },
   {
     id: "lat-pulldown",
     name: "Lat Pulldown",
+    target: "Lats — the broad muscles at the sides of your back",
+    category: "Back",
     sets: 2,
     min: 8,
     max: 12,
     rest: 120,
+    visual: "pulldown",
+    start: "Sit tall, secure your thighs under the pad, and hold the bar a little wider than your shoulders.",
+    movement: "Bring your elbows down toward your sides; guide the bar to your upper chest, then reach up slowly.",
+    tips: ["Keep a small, steady lean rather than rocking.", "Think about moving your elbows, not your hands."],
+    mistake: "Pulling the bar behind your neck or swinging your body.",
+    alternatives: ["Assisted Pull-up", "Neutral-Grip Pulldown", "Single-Arm Lat Pulldown"],
   },
   {
     id: "transverse-row",
-    name: "Transverse Row",
+    name: "Seated Cable Row",
+    target: "Mid-back and lats",
+    category: "Back",
     sets: 2,
     min: 8,
     max: 12,
     rest: 120,
+    visual: "row",
+    start: "Sit tall with knees softly bent and hold the handle with arms reaching forward.",
+    movement: "Pull the handle toward your lower ribs, then extend your arms slowly.",
+    tips: ["Keep your chest comfortably lifted.", "Let your shoulder blades move naturally."],
+    mistake: "Rocking far back to move a weight that is too heavy.",
+    alternatives: ["Chest-Supported Row", "One-Arm Dumbbell Row"],
   },
   {
-    id: "lateral-raise",
-    name: "Lateral Raise",
-    sets: 2,
+    id: "single-arm-lat",
+    name: "Single-Arm Lat Pulldown",
+    target: "Lats — the broad muscles at the sides of your back",
+    category: "Back",
+    sets: 3,
     min: 10,
     max: 15,
+    rest: 105,
+    visual: "pulldown",
+    start: "Sit or kneel beside a high cable and reach overhead to hold one handle.",
+    movement: "Draw your elbow down toward your hip, then return overhead with control.",
+    tips: ["Keep your ribs stacked over your hips.", "Use the same range on both sides."],
+    mistake: "Twisting your body to pull the handle down.",
+    alternatives: ["Single-Arm Cable Row", "Assisted One-Arm Pulldown"],
+  },
+  {
+    id: "straight-arm-pulldown",
+    name: "Straight-Arm Pulldown",
+    target: "Lats — the broad muscles at the sides of your back",
+    category: "Back",
+    sets: 2,
+    min: 12,
+    max: 15,
+    rest: 90,
+    visual: "straight-pull",
+    start: "Face a high cable, hold the bar, and lean forward slightly with soft elbows.",
+    movement: "Sweep your mostly straight arms down toward your thighs, then return slowly.",
+    tips: ["Keep your elbows softly bent throughout.", "Choose a light weight you can control."],
+    mistake: "Turning it into a triceps pushdown by bending your elbows.",
+    alternatives: ["Resistance-Band Straight-Arm Pulldown", "Dumbbell Pullover"],
+  },
+  {
+    id: "dumbbell-lateral",
+    name: "Dumbbell Lateral Raise",
+    target: "Side delts — the shoulder muscles that add width",
+    category: "Shoulders",
+    sets: 4,
+    min: 12,
+    max: 20,
     rest: 75,
+    visual: "raise",
+    start: "Stand with light dumbbells beside your thighs and a small bend in your elbows.",
+    movement: "Raise your arms out to the sides to about shoulder height, then lower slowly.",
+    tips: ["Keep your shoulders down and neck relaxed.", "Lead with your elbows and use a light weight."],
+    mistake: "Swinging your body or shrugging the weights up.",
+    alternatives: ["Cable Lateral Raise", "Lateral-Raise Machine"],
+  },
+  {
+    id: "cable-lateral",
+    name: "Cable Lateral Raise",
+    target: "Side delts — the shoulder muscles that add width",
+    category: "Shoulders",
+    sets: 2,
+    min: 15,
+    max: 20,
+    rest: 75,
+    visual: "raise",
+    start: "Stand beside a low cable and hold the handle in the hand farthest from the machine.",
+    movement: "Lift your arm out to the side to shoulder height, then lower it slowly across your body.",
+    tips: ["Keep a soft elbow and relaxed neck.", "Use a small, controlled range."],
+    mistake: "Leaning away or letting the cable pull your arm down quickly.",
+    alternatives: ["Dumbbell Lateral Raise", "Lateral-Raise Machine"],
+  },
+  {
+    id: "shoulder-press",
+    name: "Shoulder Press",
+    target: "Shoulders — mainly the front and side",
+    category: "Shoulders",
+    sets: 3,
+    min: 8,
+    max: 12,
+    rest: 120,
+    visual: "overhead-press",
+    start: "Sit with your back supported and handles beside your shoulders.",
+    movement: "Press overhead without snapping your elbows straight, then lower with control.",
+    tips: ["Keep your ribs down and feet planted.", "Use a comfortable shoulder range."],
+    mistake: "Arching your lower back or forcing a painful range.",
+    alternatives: ["Dumbbell Shoulder Press", "Landmine Press"],
+  },
+  {
+    id: "rear-delt-fly",
+    name: "Rear Delt Fly",
+    target: "Rear delts — the back of your shoulders",
+    category: "Shoulders",
+    sets: 3,
+    min: 12,
+    max: 20,
+    rest: 75,
+    visual: "rear-fly",
+    start: "Use a reverse pec deck or hinge slightly with light dumbbells hanging below your shoulders.",
+    movement: "Move your arms out wide, then bring them back together slowly.",
+    tips: ["Keep a soft bend in your elbows.", "Use a light load and steady pace."],
+    mistake: "Shrugging or using momentum to swing the weights.",
+    alternatives: ["Reverse Pec Deck", "Cable Rear-Delt Fly"],
   },
   {
     id: "preacher-curl",
     name: "Preacher Curl",
-    sets: 1,
-    maxSets: 2,
-    min: 8,
-    max: 12,
+    target: "Biceps — front of upper arms",
+    category: "Arms",
+    sets: 2,
+    min: 10,
+    max: 15,
     rest: 90,
+    visual: "curl",
+    start: "Rest your upper arms on the pad and hold the bar or handles with palms up.",
+    movement: "Curl the weight toward your shoulders, then lower until your arms are nearly straight.",
+    tips: ["Keep your upper arms on the pad.", "Lower more slowly than you lift."],
+    mistake: "Bouncing out of the bottom or letting your elbows leave the pad.",
+    alternatives: ["Dumbbell Curl", "Cable Curl"],
   },
   {
     id: "pushdown",
-    name: "Pushdown",
-    sets: 1,
-    maxSets: 2,
-    min: 8,
-    max: 12,
+    name: "Triceps Pushdown",
+    target: "Triceps — back of upper arms",
+    category: "Arms",
+    sets: 2,
+    min: 10,
+    max: 15,
     rest: 90,
+    visual: "pushdown",
+    start: "Stand at a high cable, hold the handle, and keep your elbows near your sides.",
+    movement: "Straighten your arms toward your thighs, then return the handle slowly.",
+    tips: ["Keep your shoulders relaxed.", "Move your forearms while your upper arms stay still."],
+    mistake: "Leaning your body weight onto the handle.",
+    alternatives: ["Rope Pushdown", "Overhead Cable Triceps Extension"],
   },
-  { id: "ab-crunch", name: "Ab Crunch", sets: 2, min: 10, max: 15, rest: 75 },
+  {
+    id: "ab-crunch",
+    name: "Ab Crunch",
+    target: "Core — stomach muscles",
+    category: "Core",
+    sets: 2,
+    min: 10,
+    max: 20,
+    rest: 75,
+    visual: "crunch",
+    start: "Settle into the crunch machine or lie on a mat with knees bent.",
+    movement: "Bring your ribs gently toward your hips, then return slowly without pulling your neck.",
+    tips: ["Breathe out as you curl.", "Keep the movement small and controlled."],
+    mistake: "Pulling on your head or using momentum.",
+    alternatives: ["Floor Crunch", "Dead Bug"],
+  },
 ];
+
+const workouts = {
+  A: {
+    title: "Shoulder Focus",
+    focus: "Shoulders",
+    subtitle: "Full Body + Shoulder Width",
+    exerciseIds: ["squat", "leg-curl", "incline-press", "lat-pulldown", "dumbbell-lateral", "shoulder-press", "rear-delt-fly", "cable-lateral", "preacher-curl", "pushdown", "ab-crunch"],
+    setCounts: { "lat-pulldown": 2, "dumbbell-lateral": 4 },
+  },
+  B: {
+    title: "Back / Lat Focus",
+    focus: "Back / Lats",
+    subtitle: "Full Body + Back Width",
+    exerciseIds: ["squat", "leg-curl", "incline-press", "lat-pulldown", "transverse-row", "single-arm-lat", "straight-arm-pulldown", "rear-delt-fly", "dumbbell-lateral", "preacher-curl", "pushdown", "ab-crunch"],
+    setCounts: { "lat-pulldown": 3, "transverse-row": 3, "rear-delt-fly": 2, "dumbbell-lateral": 3 },
+  },
+  C: {
+    title: "Chest / Upper Body Focus",
+    focus: "Chest + Upper Body",
+    subtitle: "Full Body + Upper-Chest Emphasis",
+    exerciseIds: ["squat", "leg-curl", "incline-press", "chest-press", "lat-pulldown", "transverse-row", "dumbbell-lateral", "rear-delt-fly", "preacher-curl", "pushdown", "ab-crunch"],
+    setCounts: { "incline-press": 3, "lat-pulldown": 3, "transverse-row": 2, "rear-delt-fly": 2, "dumbbell-lateral": 3 },
+  },
+};
+
 const initialState = {
   setupComplete: false,
   profile: { name: "", age: "", height: "", bodyWeight: "", unit: "kg" },
-  settings: { sound: true, vibration: true, xpEnabled: true, animations: true },
-  schedule: {
-    1: true,
-    2: false,
-    3: true,
-    4: false,
-    5: true,
-    6: false,
-    0: false,
-  },
-  exercises: defaultExercises,
+  settings: { sound: true, vibration: true, xpEnabled: true, animations: true, beginnerMode: true },
+  schedule: { 1: true, 2: false, 3: true, 4: false, 5: true, 6: false, 0: false },
+  exercises: catalog,
   history: [],
   xp: 0,
   level: 1,
   records: [],
   route: "home",
+  currentWorkout: "A",
+  lastWorkout: null,
   activeWorkout: null,
   rest: null,
+  libraryFilter: "All",
+  librarySearch: "",
 };
+
+const clone = (value) => JSON.parse(JSON.stringify(value));
+const app = document.querySelector("#app");
 let state = loadState();
 let timerHandle = null;
-const app = document.querySelector("#app");
 
 function loadState() {
   try {
-    return {
-      ...initialState,
-      ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"),
-    };
-  } catch {
-    return structuredClone(initialState);
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    const result = { ...clone(initialState), ...saved };
+    result.profile = { ...initialState.profile, ...saved.profile };
+    result.settings = { ...initialState.settings, ...saved.settings };
+    result.currentWorkout = WORKOUT_ORDER.includes(saved.currentWorkout) ? saved.currentWorkout : "A";
+    result.history = Array.isArray(saved.history) ? saved.history : [];
+    result.records = Array.isArray(saved.records) ? saved.records : [];
+    result.exercises = catalog;
+    if (result.activeWorkout && !WORKOUT_ORDER.includes(result.activeWorkout.key)) result.activeWorkout.key = result.currentWorkout;
+    if (result.activeWorkout?.complete) result.activeWorkout = null;
+    result.route = "home";
+    return result;
+  } catch (error) {
+    console.error("Unable to load saved workout data.", error);
+    return clone(initialState);
   }
 }
+
 function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch (error) {
+    console.error("Unable to save workout data.", error);
+    showToast("Could not save. Check device storage.");
+  }
 }
+
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  })[character]);
+}
+
 function formatDate(date = new Date()) {
-  return new Intl.DateTimeFormat(undefined, {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(date));
+  return new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", year: "numeric" }).format(new Date(date));
 }
-function dayName(day) {
-  return [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ][day];
-}
-function scheduledDays() {
-  return Object.keys(state.schedule)
-    .filter((day) => state.schedule[day])
-    .map(Number);
-}
+
 function xpForLevel(level) {
   return 100 + (level - 1) * 100;
 }
+
 function currentLevel() {
   let level = 1;
   let remaining = state.xp;
-  while (remaining >= xpForLevel(level)) {
-    remaining -= xpForLevel(level);
-    level++;
-  }
+  while (remaining >= xpForLevel(level)) remaining -= xpForLevel(level++);
   return { level, current: remaining, next: xpForLevel(level) };
 }
+
 function totalStats() {
-  const workouts = state.history;
-  const sets = workouts.flatMap((workout) => workout.sets || []);
+  const sets = state.history.flatMap((workout) => workout.sets || []);
   return {
-    workouts: workouts.length,
+    workouts: state.history.length,
     sets: sets.length,
     reps: sets.reduce((sum, set) => sum + Number(set.reps || 0), 0),
-    volume: sets.reduce(
-      (sum, set) => sum + Number(set.reps || 0) * Number(set.weight || 0),
-      0,
-    ),
+    volume: sets.reduce((sum, set) => sum + Number(set.reps || 0) * Number(set.weight || 0), 0),
   };
 }
+
 function lastForExercise(id) {
   for (const workout of [...state.history].reverse()) {
     const sets = (workout.sets || []).filter((set) => set.exerciseId === id);
@@ -156,461 +398,524 @@ function lastForExercise(id) {
   }
   return [];
 }
+
 function previousText(id) {
   const sets = lastForExercise(id);
-  return sets.length
-    ? sets
-        .map((set) => `${set.weight} ${state.profile.unit} x ${set.reps}`)
-        .join("  /  ")
-    : "No previous record";
+  return sets.length ? sets.map((set) => `${set.weight} ${state.profile.unit} × ${set.reps}`).join(" · ") : "No previous performance yet";
 }
-function nextWorkoutDay() {
-  const today = new Date().getDay();
-  for (let offset = 0; offset <= 7; offset++) {
-    const day = (today + offset) % 7;
-    if (state.schedule[day]) return { day, offset };
-  }
-  return { day: 1, offset: 1 };
-}
-function streak() {
-  let count = 0;
-  let cursor = new Date();
-  const dates = new Set(
-    state.history.map((workout) => new Date(workout.date).toDateString()),
-  );
-  while (dates.has(cursor.toDateString())) {
-    count++;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-  return count;
-}
+
 function showToast(message) {
   const toast = document.querySelector("#toast");
   toast.textContent = message;
   toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2400);
+  window.clearTimeout(showToast.timeout);
+  showToast.timeout = window.setTimeout(() => toast.classList.remove("show"), 2400);
 }
+
+function button(text, action, className = "ghost-btn", extra = "") {
+  return `<button type="button" class="${className}" data-action="${action}" ${extra}>${text}</button>`;
+}
+
 function changeRoute(route) {
   state.route = route;
   saveState();
   render();
+  if (state.rest) startTimer();
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
-function button(text, action, className = "ghost-btn") {
-  return `<button class="${className}" data-action="${action}">${text}</button>`;
+
+function nextKey(key) {
+  return WORKOUT_ORDER[(WORKOUT_ORDER.indexOf(key) + 1) % WORKOUT_ORDER.length];
 }
 
-const exerciseGuides = {
-  "leg-press": {
-    type: "press",
-    target: "QUADS + GLUTES",
-    image: "Leg_Press/0.jpg",
-    cue: "Drive through your mid-foot; keep your knees tracking over your toes.",
-  },
-  "leg-curl": {
-    type: "curl",
-    target: "HAMSTRINGS",
-    image: "Lying_Leg_Curls/0.jpg",
-    cue: "Curl smoothly and squeeze your hamstrings without lifting your hips.",
-  },
-  "incline-press": {
-    type: "press",
-    target: "UPPER CHEST",
-    image: "Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg",
-    cue: "Lower with control and press up while keeping your shoulder blades set.",
-  },
-  "lat-pulldown": {
-    type: "pull",
-    target: "LATS",
-    image: "Wide-Grip_Lat_Pulldown/0.jpg",
-    cue: "Pull your elbows down toward your ribs; avoid swinging your torso.",
-  },
-  "transverse-row": {
-    type: "row",
-    target: "MID-BACK",
-    image: "Seated_Cable_Rows/0.jpg",
-    cue: "Brace your core and pull your elbows back, squeezing between your shoulder blades.",
-  },
-  "lateral-raise": {
-    type: "raise",
-    target: "SIDE DELTS",
-    image: "Side_Lateral_Raise/0.jpg",
-    cue: "Lift with soft elbows until your hands reach shoulder height.",
-  },
-  "preacher-curl": {
-    type: "curl",
-    target: "BICEPS",
-    image: "Preacher_Curl/0.jpg",
-    cue: "Keep your upper arms on the pad and lower the weight slowly.",
-  },
-  pushdown: {
-    type: "pushdown",
-    target: "TRICEPS",
-    image: "Triceps_Pushdown/0.jpg",
-    cue: "Pin your elbows to your sides and press the handle down to full extension.",
-  },
-  "ab-crunch": {
-    type: "crunch",
-    target: "ABS",
-    image: "Cable_Crunch/0.jpg",
-    cue: "Curl your ribs toward your pelvis; do not pull on your neck.",
-  },
-};
+function workoutLabel(key) {
+  return `${key} — ${workouts[key].title}`;
+}
+
+function exerciseArt(exercise) {
+  const poses = {
+    squat: ["M45 45 L31 54 L68 55 L83 45", "M45 45 L34 59 L70 66 L84 49"],
+    curl: ["M45 45 L34 67 L50 66 L83 46", "M45 45 L36 58 L58 52 L83 46"],
+    press: ["M45 45 L30 39 L30 24 L83 24 L83 39 L69 45", "M45 45 L30 28 L30 14 L83 14 L83 28 L69 45"],
+    pulldown: ["M45 45 L32 20 L32 9 L83 9 L83 20 L69 45", "M45 45 L34 36 L34 9 L83 9 L83 36 L69 45"],
+    row: ["M45 45 L25 59 L38 64 L70 47", "M45 45 L42 55 L56 59 L70 47"],
+    raise: ["M45 45 L32 55 L34 75 L69 75 L71 55 L83 45", "M45 45 L24 38 L27 58 L76 58 L90 38 L83 45"],
+    "overhead-press": ["M45 45 L34 54 L38 72 L69 72 L73 54 L83 45", "M45 45 L37 28 L37 12 L69 12 L69 28 L83 45"],
+    "rear-fly": ["M45 45 L30 64 L39 69 L70 48", "M45 45 L20 48 L25 61 L76 61 L88 48 L70 48"],
+    "straight-pull": ["M45 45 L29 18 L29 8 L83 8 L83 18 L69 45", "M45 45 L29 53 L41 67 L70 45"],
+    pushdown: ["M45 45 L31 34 L36 48 L69 48 L79 34 L83 45", "M45 45 L39 60 L42 74 L69 74 L72 60 L83 45"],
+    crunch: ["M45 48 L30 62 L48 67 L71 52", "M45 48 L38 59 L57 57 L71 52"],
+  };
+  const [startArms, moveArms] = poses[exercise.visual] || poses.row;
+  const renderFigure = (arms, offset, isMovement) => {
+    if (exercise.visual === "crunch") {
+      const head = isMovement ? [48, 79] : [32, 108];
+      const torso = isMovement
+        ? "M56 86 Q70 80 84 104 L96 119 L81 124 L58 109"
+        : "M42 103 L69 99 L91 116 L82 126 L58 116 L42 113";
+      const crunchArms = isMovement
+        ? "M57 88 L48 73 L39 73 M62 90 L70 75 L78 78"
+        : "M44 104 L42 92 L34 91 M48 103 L53 91 L62 94";
+      return `<g transform="translate(${offset} 0)">
+        <circle cx="${head[0]}" cy="${head[1]}" r="9" class="art-skin"/>
+        <path d="${torso}" class="art-body"/>
+        <path d="${crunchArms} M84 119 L105 117 L124 133 M89 122 L111 121 L132 134" class="art-limbs"/>
+        <path d="M65 102 L71 111 M74 101 L79 111" class="art-muscle"/>
+        <path d="M19 140 H140" class="art-equipment"/>
+      </g>`;
+    }
+    const legPose = exercise.visual === "squat" && isMovement
+      ? "M50 78 L39 92 L47 113 M64 78 L77 92 L70 113"
+      : exercise.id === "leg-curl" && isMovement
+        ? "M50 78 L48 101 L58 108 L68 96 L74 134"
+        : "M50 78 L48 110 L41 134 M64 78 L67 110 L74 134";
+    const highlight = exercise.category === "Legs"
+      ? `<path d="M47 88 L44 109 M68 88 L70 108" class="art-muscle"/>`
+      : exercise.category === "Back"
+        ? `<path d="M48 46 Q44 55 49 65 M66 46 Q71 55 65 65" class="art-muscle"/>`
+        : exercise.category === "Chest"
+          ? `<path d="M49 48 Q57 44 65 48" class="art-muscle"/>`
+          : exercise.category === "Arms"
+            ? `<path d="M43 52 L37 63 M70 52 L77 63" class="art-muscle"/>`
+            : exercise.category === "Core"
+              ? `<path d="M54 52 L54 68 M60 52 L60 68" class="art-muscle"/>`
+              : `<path d="M42 48 Q47 43 52 48 M64 48 Q70 43 75 48" class="art-muscle"/>`;
+    return `<g transform="translate(${offset} 0)">
+    <circle cx="57" cy="28" r="10" class="art-skin"/>
+    <path d="M50 39 Q57 35 64 39 L70 62 L65 79 L49 79 L44 62Z" class="art-body"/>
+    <path d="${arms}" class="art-limbs"/>
+    <path d="${legPose}" class="art-limbs"/>
+    ${highlight}
+    <path d="M33 140 H49 M66 140 H82" class="art-equipment"/>
+  </g>`;
+  };
+  return `<svg class="movement-art" viewBox="0 0 320 178" role="img" aria-label="Offline illustration of ${escapeHtml(exercise.name)}: starting position and movement">
+    <rect x="1" y="1" width="318" height="176" rx="14" class="art-background"/>
+    <text x="80" y="21" text-anchor="middle" class="art-label">START</text>
+    <text x="240" y="21" text-anchor="middle" class="art-label">MOVE</text>
+    ${renderFigure(startArms, 18, false)}
+    <path d="M140 80 H174 M168 74 L174 80 L168 86" class="art-arrow"/>
+    ${renderFigure(moveArms, 178, true)}
+    <path d="M18 151 H138 M182 151 H302" class="art-floor"/>
+  </svg>`;
+}
 
 function renderExerciseGuide(exercise) {
-  const guide = exerciseGuides[exercise.id] || {
-    type: "press",
-    target: "FULL BODY",
-    image: "Leg_Press/0.jpg",
-    cue: "Move with control and keep the working muscles engaged.",
-  };
-  const drawings = {
-    press: `<circle cx="53" cy="21" r="6" class="skin"/><path d="M53 28c-8 5-9 16-5 25l5 8 5-8c4-9 3-20-5-25Z" class="skin"/><path d="M48 38 31 31m27 7 17-7M49 60 39 84m19-24 10 24" class="skin"/><path d="M45 40c3 4 5 7 8 8 3-1 5-4 8-8" class="muscle"/><path d="M25 29h56M31 25v8m44-8v8M38 29 53 17m29 12L67 17" class="equipment"/><path d="M38 29h30" class="equipment"/>`,
-    curl: `<circle cx="53" cy="20" r="6" class="skin"/><path d="M53 27c-8 5-9 17-5 26l5 8 5-8c4-9 3-21-5-26Z" class="skin"/><path d="M49 38 37 51l-8 1m24-14 12 13 8 1M49 61 39 85m19-24 10 24" class="skin"/><path d="M35 48c4 2 6 5 8 8m26-8c-4 2-6 5-8 8" class="muscle"/><path d="M25 58h56" class="equipment"/><circle cx="20" cy="58" r="5" class="weight"/><circle cx="86" cy="58" r="5" class="weight"/><path d="M30 56h46" class="equipment"/>`,
-    pull: `<circle cx="53" cy="37" r="6" class="skin"/><path d="M53 44c-8 5-9 15-5 24l5 7 5-7c4-9 3-19-5-24Z" class="skin"/><path d="M48 51 31 35m27 16 17-16M50 74 39 90m17-16 10 16" class="skin"/><path d="M43 49c3 5 6 8 10 9 4-1 7-4 10-9" class="muscle"/><path d="M20 14h66M31 14v12m44-12v12M31 14l22 31m22-31L53 45" class="equipment"/><path d="M39 24h28" class="equipment"/>`,
-    row: `<circle cx="60" cy="20" r="6" class="skin"/><path d="M58 27 41 51l14 8 20-17" class="skin"/><path d="M48 55 31 82m15-23 19 21" class="skin"/><path d="M51 35c4 6 10 8 16 7" class="muscle"/><path d="M75 42 49 56m28-12 12-8" class="equipment"/><circle cx="91" cy="34" r="5" class="weight"/><path d="M27 84h61" class="equipment"/>`,
-    raise: `<circle cx="53" cy="21" r="6" class="skin"/><path d="M53 28c-8 5-9 16-5 25l5 8 5-8c4-9 3-20-5-25Z" class="skin"/><path d="M49 38 25 48m32-10 24 10M49 61 39 85m19-24 10 24" class="skin"/><path d="M44 39c4 3 5 5 9 5 4 0 5-2 9-5" class="muscle"/><path d="M25 48h-9m65 0h9" class="equipment"/><circle cx="11" cy="48" r="5" class="weight"/><circle cx="97" cy="48" r="5" class="weight"/>`,
-    pushdown: `<circle cx="53" cy="36" r="6" class="skin"/><path d="M53 43c-8 5-9 15-5 24l5 7 5-7c4-9 3-19-5-24Z" class="skin"/><path d="M48 51 36 65m24-14 12 14M50 74 39 90m17-16 10 16" class="skin"/><path d="M43 49c3 5 6 8 10 9 4-1 7-4 10-9" class="muscle"/><path d="M23 14h60M35 14v11m36-11v11M35 25l18 33m18-33L53 58M41 58h24" class="equipment"/>`,
-    crunch: `<circle cx="73" cy="35" r="6" class="skin"/><path d="M68 42 43 56l13 11 23-15" class="skin"/><path d="M47 63 28 80m14-19 19 18" class="skin"/><path d="M52 53c5 2 10 4 15 1m-12 8c4 2 7 3 11 1" class="muscle"/><path d="M22 82h66M53 62l17 17" class="equipment"/>`,
-  };
-  const imageUrl = `https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${guide.image}`;
-  return `<div class="exercise-guide"><div class="guide-art"><img src="${imageUrl}" alt="${exercise.name} exercise photo" loading="lazy" onerror="this.hidden=true;this.nextElementSibling.hidden=false"><svg class="guide-fallback" viewBox="0 0 108 102" role="img" aria-label="${exercise.name} anatomy illustration" hidden><g>${drawings[guide.type]}</g></svg></div><div><small class="guide-label">TARGET MUSCLES // ${guide.target}</small><p>${guide.cue}</p><small class="guide-source">PHOTO: FREE EXERCISE DB</small></div></div>`;
+  const photoPath = exercisePhotos[exercise.id];
+  const photos = photoPath
+    ? [0, 1].map((frame) => `${EXERCISE_IMAGE_BASE}${photoPath}/${frame}.jpg`)
+    : [];
+  const videoSearch = new URL("https://www.youtube.com/results");
+  videoSearch.searchParams.set("search_query", `${exercise.name} correct form exercise shorts`);
+  return `<div class="exercise-visual">
+    <div class="photo-pair">${photos.map((url, frame) => `<img class="exercise-photo" src="${url}" alt="${escapeHtml(exercise.name)} ${frame ? "movement" : "starting position"} photo" loading="lazy" decoding="async">`).join("")}</div>
+    <div class="visual-caption"><span>1 · STARTING POSITION</span><span>2 · MOVEMENT</span></div>
+    <div class="visual-fallback" hidden>${exerciseArt(exercise)}</div>
+    <div class="media-links"><a href="https://github.com/yuhonas/free-exercise-db" target="_blank" rel="noopener noreferrer">Public-domain exercise photos</a><a class="video-link" href="${videoSearch.href}" target="_blank" rel="noopener noreferrer">▶ Find a short video demo</a></div>
+  </div>
+    <div class="guide-copy"><p><strong>Start:</strong> ${escapeHtml(exercise.start)}</p><p><strong>Move:</strong> ${escapeHtml(exercise.movement)}</p>
+    ${state.settings.beginnerMode ? '<p class="beginner-reminder"><strong>Beginner mode:</strong> Start light, move smoothly, and stop if you feel sharp pain.</p>' : ""}
+    <div class="form-note"><strong>FORM TIPS</strong><ul>${exercise.tips.map((tip) => `<li>${escapeHtml(tip)}</li>`).join("")}</ul></div>
+    <p class="mistake-note"><strong>AVOID:</strong> ${escapeHtml(exercise.mistake)}</p>
+    <details class="alternatives"><summary>See alternatives</summary><div>${exercise.alternatives.map((alternative) => `<button type="button" data-action="set-alternative" data-id="${exercise.id}" data-value="${escapeHtml(alternative)}">${escapeHtml(alternative)}</button>`).join("")}</div></details></div>`;
 }
 
 function render() {
-  document
-    .querySelectorAll(".nav-item")
-    .forEach((item) =>
-      item.classList.toggle("active", item.dataset.route === state.route),
-    );
-  app.innerHTML =
-    state.route === "home"
-      ? renderHome()
-      : state.route === "workout"
-        ? renderWorkout()
-        : state.route === "history"
-          ? renderHistory()
-          : state.route === "stats"
-            ? renderStats()
-            : renderSettings();
-  if (state.route === "stats") requestAnimationFrame(drawChart);
+  document.querySelectorAll(".nav-item").forEach((item) => item.classList.toggle("active", item.dataset.route === state.route));
+  document.querySelector("#soundToggle").textContent = state.settings.sound ? "VOL" : "MUTE";
+  app.classList.toggle("beginner-mode", state.settings.beginnerMode);
+  app.innerHTML = state.route === "home"
+    ? renderHome()
+    : state.route === "workout"
+      ? renderWorkout()
+      : state.route === "library"
+        ? renderLibrary()
+        : state.route === "progress"
+          ? renderProgress()
+          : renderSettings();
+  if (state.route === "progress") requestAnimationFrame(drawChart);
   if (!state.setupComplete) renderSetupModal();
 }
+
 function renderHome() {
-  const level = currentLevel();
-  const stats = totalStats();
-  const next = nextWorkoutDay();
+  const key = state.activeWorkout?.key || state.currentWorkout;
+  const workout = workouts[key];
   const recent = state.history.at(-1);
   const record = state.records.at(-1);
-  return `<section class="page"><div class="page-heading"><div><p class="eyebrow">SYSTEM ONLINE</p><h1>${state.profile.name ? `WELCOME, ${state.profile.name.toUpperCase()}` : "WELCOME, HUNTER"}</h1></div><span class="accent tiny">${formatDate()}</span></div>
-    <div class="panel hero-panel"><div class="system-label">CURRENT STATUS // ${streak()} DAY STREAK</div><div><div class="level-line"><strong>LEVEL ${level.level}</strong><span>${state.settings.xpEnabled ? "XP ACTIVE" : "XP OFF"}</span></div><div class="xp-bar"><span style="width:${Math.min(100, (level.current / level.next) * 100)}%"></span></div><div class="xp-meta"><span>XP ${level.current} / ${level.next}</span><span>${state.xp} TOTAL</span></div></div></div>
-    <div class="grid-2"><div class="stat-card"><small>STREAK</small><strong>${streak()} <em>DAYS</em></strong></div><div class="stat-card violet"><small>WORKOUTS</small><strong>${stats.workouts}</strong></div><div class="stat-card lime"><small>TOTAL SETS</small><strong>${stats.sets}</strong></div><div class="stat-card"><small>VOLUME</small><strong>${Math.round(stats.volume).toLocaleString()} <em>${state.profile.unit}</em></strong></div></div>
-    <p class="section-label">NEXT QUEST</p><div class="panel quest-card"><div><div class="system-label">DAILY QUEST</div><h2>FULL BODY</h2><p>${dayName(next.day).toUpperCase()} // ${next.offset === 0 ? "TODAY" : `IN ${next.offset} DAY${next.offset > 1 ? "S" : ""}`}</p></div><div class="quest-icon">+</div></div><div class="action-row" style="margin-top:12px">${button("START WORKOUT", "start-workout", "primary-btn")}</div>
-    <p class="section-label">SYSTEM LOG</p><div class="panel">${recent ? `<div class="recent-row"><div><h3>Last workout</h3><p>${formatDate(recent.date)} // ${recent.sets.length} sets</p></div><strong class="accent">+${recent.xp || 0} XP</strong></div>` : '<p class="muted tiny">No completed workouts yet. Your first quest is waiting.</p>'}${record ? `<div class="recent-row"><div><h3>NEW RECORD</h3><p>${record.name} // ${record.weight} ${state.profile.unit} x ${record.reps}</p></div><strong class="accent">PR</strong></div>` : ""}</div>
-  </section>`;
-}
-function renderWorkout() {
-  if (state.activeWorkout && state.activeWorkout.complete)
-    return renderComplete();
-  const active = state.activeWorkout || {
-    startedAt: Date.now(),
-    sets: [],
-    started: true,
-  };
-  const exercises = state.exercises.map((exercise) => {
-    const sets = active.sets.filter((set) => set.exerciseId === exercise.id);
-    return `<article class="exercise-card ${sets.length ? "active" : ""}" data-exercise="${exercise.id}"><div class="exercise-top"><div><h2>${exercise.name.toUpperCase()}</h2><p class="target">TARGET: ${exercise.sets}${exercise.maxSets ? `-${exercise.maxSets}` : ""} SETS x ${exercise.min}-${exercise.max}</p></div><span class="accent tiny">${sets.length}/${exercise.sets}</span></div>${renderExerciseGuide(exercise)}<div class="previous"><small>PREVIOUS RESULT</small><p>${previousText(exercise.id)}</p></div><div class="set-controls"><label class="input-label">WEIGHT (${state.profile.unit})<input class="number-input weight-input" type="number" min="0" step="0.5" value="${sets.length ? sets.at(-1).weight : lastForExercise(exercise.id)[0]?.weight || ""}" placeholder="0"></label><label class="input-label">REPS<input class="number-input reps-input" type="number" min="0" value="${sets.length ? sets.at(-1).reps : exercise.min}" placeholder="${exercise.min}"></label></div>${sets.length ? `<div class="sets-row">${sets.map((set, index) => `<span class="set-chip done">${index + 1}</span>`).join("")}</div>` : ""}<button class="complete-btn ${sets.length >= exercise.sets ? "done" : ""}" data-action="complete-set" data-id="${exercise.id}">${sets.length >= exercise.sets ? "SET COMPLETE - ADD SET" : "COMPLETE SET"}</button>${renderRestFor(exercise.id)}</article>`;
-  });
-  return `<section class="page"><div class="workout-head page-heading"><div><p class="eyebrow">ACTIVE QUEST</p><h1>FULL BODY</h1><p>${formatDate(active.startedAt)} // ${active.sets.length} WORKING SETS</p></div>${active.started ? '<span class="timer-pill" id="session-time">00:00</span>' : ""}</div><div class="panel" style="margin-bottom:14px"><div class="action-row">${button("GYM MODE", "gym-mode", "primary-btn")}${button("END WORKOUT", "end-workout", "ghost-btn")}</div></div><div class="exercise-list">${exercises.join("")}</div></section>`;
-}
-function renderRestFor(exerciseId) {
-  if (!state.rest || state.rest.exerciseId !== exerciseId) return "";
-  const remaining = Math.max(
-    0,
-    Math.ceil((state.rest.endsAt - Date.now()) / 1000),
-  );
-  return `<div class="panel rest-panel"><div class="system-label">SYSTEM REST // NEXT SET</div><div class="countdown" data-countdown="${exerciseId}">${formatTimer(remaining)}</div><div class="timer-actions">${button("+15 SEC", "add-time:15")}${button("+30 SEC", "add-time:30")}${button("+60 SEC", "add-time:60")}${button("SKIP", "skip-rest", "ghost-btn")}</div><button class="next-btn primary-btn" data-action="skip-rest">NEXT SET</button></div>`;
-}
-function renderComplete() {
-  const workout = state.activeWorkout;
-  return `<section class="page"><div class="panel hero-panel"><div class="system-label">WORKOUT COMPLETE</div><div><div class="level-line"><strong>QUEST CLEAR</strong></div><p class="muted">${workout.sets.length} working sets logged // ${Math.round(workout.sets.reduce((sum, set) => sum + set.weight * set.reps, 0))} ${state.profile.unit} volume</p></div><div class="action-row">${button("RETURN HOME", "finish-workout", "primary-btn")}${button("VIEW HISTORY", "history", "ghost-btn")}</div></div></section>`;
-}
-function renderHistory() {
-  return `<section class="page"><div class="page-heading"><div><p class="eyebrow">ARCHIVE</p><h1>HISTORY</h1></div><span class="accent tiny">${state.history.length} QUESTS</span></div><div class="panel">${
-    state.history.length
-      ? [...state.history]
-          .reverse()
-          .map(
-            (workout, index) =>
-              `<div class="history-item" data-action="view-workout" data-index="${state.history.length - index - 1}"><div><h3>${formatDate(workout.date)}</h3><p>${workout.duration || 0} min // ${workout.sets.length} sets // ${Math.round(workout.sets.reduce((sum, set) => sum + set.weight * set.reps, 0))} ${state.profile.unit}</p></div><div class="history-score">+${workout.xp || 0}<small> XP</small></div></div>`,
-          )
-          .join("")
-      : '<p class="muted tiny">Your completed quests will appear here.</p>'
-  }</div></section>`;
-}
-function renderStats() {
   const stats = totalStats();
   const level = currentLevel();
-  return `<section class="page"><div class="page-heading"><div><p class="eyebrow">SYSTEM ANALYTICS</p><h1>STATS</h1></div><span class="accent tiny">LEVEL ${level.level}</span></div><div class="grid-2"><div class="stat-card"><small>TOTAL XP</small><strong>${state.xp}</strong></div><div class="stat-card violet"><small>LONGEST STREAK</small><strong>${Math.max(streak(), state.history.length ? 1 : 0)} <em>D</em></strong></div><div class="stat-card lime"><small>REPS</small><strong>${stats.reps}</strong></div><div class="stat-card"><small>CONSISTENCY</small><strong>${state.schedule ? Math.min(100, Math.round((stats.workouts / Math.max(1, Math.ceil((Date.now() - (state.history[0]?.date || Date.now())) / 604800000)) / 3) * 100)) : 0}<em>%</em></strong></div></div><p class="section-label">PROGRESSION</p><div class="panel"><div class="filter-row">${state.exercises
-    .slice(0, 5)
-    .map(
-      (exercise, index) =>
-        `<button class="choice-btn ${index === 0 ? "active" : ""}" data-action="chart-exercise" data-id="${exercise.id}">${exercise.name}</button>`,
-    )
-    .join(
-      "",
-    )}</div><div class="chart-wrap"><canvas id="progress-chart" aria-label="Exercise progression chart"></canvas></div></div><p class="section-label">ATTRIBUTES</p><div class="grid-2"><div class="stat-card"><small>STR // STRENGTH</small><strong>${Math.min(99, 10 + Math.floor(stats.volume / 100))}</strong></div><div class="stat-card violet"><small>VIT // CONSISTENCY</small><strong>${Math.min(99, 10 + stats.workouts * 3)}</strong></div><div class="stat-card lime"><small>END // COMPLETION</small><strong>${Math.min(99, 10 + stats.sets)}</strong></div><div class="stat-card"><small>AGI // EFFICIENCY</small><strong>${Math.min(99, 10 + Math.floor(stats.reps / 10))}</strong></div></div><p class="section-label">PERSONAL RECORDS</p><div class="panel">${
-    state.records.length
-      ? [...state.records]
-          .reverse()
-          .slice(0, 6)
-          .map(
-            (record) =>
-              `<div class="record"><strong>NEW RECORD</strong><span>${record.name} - ${record.weight} ${state.profile.unit} x ${record.reps}</span></div>`,
-          )
-          .join("")
-      : '<p class="muted tiny">Complete a set to start building records.</p>'
-  }</div></section>`;
+  const last = state.lastWorkout;
+  return `<section class="page">
+    <div class="page-heading"><div><p class="eyebrow">YOUR BLOOD HOUNDS TRAINING SYSTEM</p><h1>BLOOD HOUNDS<br>V-TAPER GUIDE</h1></div><span class="accent tiny">${formatDate()}</span></div>
+    <div class="today-card"><div class="today-kicker">TODAY'S WORKOUT</div><div class="today-title"><span class="workout-letter">${key}</span><div><h2>WORKOUT ${key}</h2><p>${escapeHtml(workout.title.toUpperCase())}</p></div></div>
+      <p class="today-subtitle">${escapeHtml(workout.subtitle)}</p>
+      <div class="focus-banner"><span>🔥 MAIN FOCUS</span><strong>${escapeHtml(workout.focus.toUpperCase())}</strong><small>Full body training, with extra attention here.</small></div>
+      <div class="home-progress"><div><strong>${state.activeWorkout?.key === key ? completedCount(state.activeWorkout, workout) : 0} / ${workout.exerciseIds.length}</strong><span> exercises complete</span></div><div class="progress-track"><span style="width:${state.activeWorkout?.key === key ? completionPercent(state.activeWorkout, workout) : 0}%"></span></div></div>
+      <button class="primary-btn wide-btn" data-action="start-workout">${state.activeWorkout?.key === key ? "CONTINUE WORKOUT" : "START WORKOUT " + key}</button>
+    </div>
+    <div class="rotation-grid"><div class="panel rotation-card"><small>LAST WORKOUT</small><strong>${last ? `Workout ${escapeHtml(last.key)}` : "Not yet started"}</strong><span>${last ? escapeHtml(workouts[last.key]?.focus || "") : "Your first session is ready"}</span></div><div class="panel rotation-card"><small>NEXT GYM SESSION</small><strong>Workout ${key}</strong><span>${escapeHtml(workout.title)}</span></div></div>
+    <div class="rest-reminder"><strong>REST DAY?</strong><span>Rest between sessions. Your workout rotation waits for you—no calendar schedule needed.</span></div>
+    <p class="section-label">YOUR TRAINING</p><div class="grid-2"><div class="stat-card"><small>WORKOUTS</small><strong>${stats.workouts}</strong></div><div class="stat-card violet"><small>LEVEL</small><strong>${level.level}</strong></div><div class="stat-card lime"><small>SETS LOGGED</small><strong>${stats.sets}</strong></div><div class="stat-card"><small>TOTAL VOLUME</small><strong>${Math.round(stats.volume).toLocaleString()} <em>${state.profile.unit}</em></strong></div></div>
+    <div class="panel xp-summary"><div><strong>LEVEL ${level.level}</strong><span>${state.xp} XP total</span></div><div class="xp-bar"><span style="width:${Math.min(100, (level.current / level.next) * 100)}%"></span></div></div>
+    <p class="section-label">RECENT SESSION</p><div class="panel recent-panel">${recent ? `<strong>Workout ${escapeHtml(recent.key || "?")} · ${escapeHtml(workouts[recent.key]?.title || "Full Body")}</strong><p>${formatDate(recent.date)} · ${recent.sets.length} sets logged</p>` : '<p class="muted">No completed workouts yet. Your A → B → C rotation starts here.</p>'}</div>
+    ${record ? `<div class="personal-best"><small>LATEST PERSONAL BEST</small><strong>${escapeHtml(record.name)} · ${record.weight} ${state.profile.unit} × ${record.reps}</strong></div>` : ""}
+  </section>`;
 }
+
+function completedCount(active, workout) {
+  const key = Object.keys(workouts).find((candidate) => workouts[candidate] === workout) || active.key;
+  return workout.exerciseIds.filter((id) => (active.sets || []).filter((set) => set.exerciseId === id).length >= workoutSets(id, key)).length;
+}
+
+function completionPercent(active, workout) {
+  return Math.round((completedCount(active, workout) / workout.exerciseIds.length) * 100);
+}
+
+function getExercise(id) {
+  return catalog.find((exercise) => exercise.id === id);
+}
+
+function workoutSets(id, key) {
+  return workouts[key]?.setCounts?.[id] || getExercise(id).sets;
+}
+
+function activeExerciseIds() {
+  return workouts[state.activeWorkout?.key || state.currentWorkout].exerciseIds;
+}
+
+function renderWorkout() {
+  if (state.activeWorkout?.complete) return renderComplete();
+  const key = state.activeWorkout?.key || state.currentWorkout;
+  const workout = workouts[key];
+  const active = state.activeWorkout;
+  const done = active ? completedCount(active, workout) : 0;
+  return `<section class="page"><div class="page-heading workout-heading"><div><p class="eyebrow">TODAY'S WORKOUT · A → REST → B → REST → C</p><h1>WORKOUT ${key}</h1><p>${escapeHtml(workout.title)} · Full body</p></div>${active ? `<span class="timer-pill" id="session-time">${formatTimer(Math.max(0, Math.floor((Date.now() - active.startedAt) / 1000)))}</span>` : ""}</div>
+    <div class="focus-banner workout-focus"><span>🔥 MAIN FOCUS</span><strong>${escapeHtml(workout.focus.toUpperCase())}</strong><small>${escapeHtml(workout.subtitle)}</small></div>
+    <div class="warmup-strip"><strong>WARM UP</strong><span>5–10 min easy cardio · shoulder mobility · a few light warm-up sets before your first working set.</span></div>
+    <div class="progress-summary"><div><strong>${done} / ${workout.exerciseIds.length} exercises</strong><span>${completionPercent(active || { sets: [] }, workout)}% complete</span></div><div class="progress-track"><span style="width:${completionPercent(active || { sets: [] }, workout)}%"></span></div></div>
+    <div class="workout-actions">${button("GYM MODE", "gym-mode", "ghost-btn")}${active ? button("FINISH WORKOUT", "end-workout", "ghost-btn") : ""}</div>
+    <div class="exercise-list">${workout.exerciseIds.map((id, index) => renderExerciseCard(getExercise(id), index, active, false, key)).join("")}</div>
+    ${active && state.rest ? renderRestFor(state.rest.exerciseId) : ""}</section>`;
+}
+
+function renderExerciseCard(exercise, index, active, library = false, workoutKey = state.currentWorkout) {
+  const targetSets = library ? exercise.sets : workoutSets(exercise.id, active?.key || workoutKey);
+  const loggedSets = (active?.sets || []).filter((set) => set.exerciseId === exercise.id);
+  const complete = loggedSets.length >= targetSets;
+  const selectedAlternative = active?.exerciseOptions?.[exercise.id] || exercise.name;
+  const last = lastForExercise(exercise.id);
+  const current = loggedSets.length ? `${loggedSets.at(-1).weight} ${state.profile.unit} × ${loggedSets.at(-1).reps}` : "No sets logged yet";
+  return `<article class="exercise-card ${complete ? "exercise-done" : ""} ${active?.focusedExercise === exercise.id ? "exercise-focused" : ""}" id="exercise-${exercise.id}">
+    <div class="exercise-top"><div class="exercise-number">${String(index + 1).padStart(2, "0")}</div><div class="exercise-title-wrap"><h2>${escapeHtml(selectedAlternative)}</h2><p class="target">${escapeHtml(exercise.target)}</p></div>${complete ? '<span class="done-badge">✓ DONE</span>' : ""}</div>
+    ${renderExerciseGuide(exercise)}
+    <div class="prescription"><strong>${targetSets} sets × ${exercise.min}–${exercise.max} reps</strong><span>${escapeHtml(exercise.category)} · Rest ${Math.round(exercise.rest / 60)} min</span></div>
+    <div class="performance-grid"><div><small>LAST TIME</small><p>${last.length ? `${last.at(-1).weight} ${state.profile.unit} × ${last.at(-1).reps}` : "First time — record a baseline"}</p></div><div><small>CURRENT</small><p>${escapeHtml(current)}</p></div></div>
+    ${library ? "" : `<div class="set-log">${loggedSets.map((set, setIndex) => `<div class="logged-set"><span>Set ${setIndex + 1}</span><strong>${set.weight} ${state.profile.unit} × ${set.reps} reps</strong><span>✓</span></div>`).join("")}</div>
+    ${complete ? '<div class="exercise-complete-note">Exercise complete. Move on when you are ready.</div>' : `<div class="set-controls"><label class="input-label">WEIGHT (${state.profile.unit})<input class="number-input weight-input" type="number" min="0" step="0.5" value="${loggedSets.at(-1)?.weight ?? last.at(-1)?.weight ?? ""}" placeholder="0"></label><label class="input-label">REPS<input class="number-input reps-input" type="number" min="${exercise.min}" max="${exercise.max}" value="${loggedSets.at(-1)?.reps ?? exercise.min}" inputmode="numeric"></label></div>
+    <button class="complete-btn" data-action="${active ? "complete-set" : "start-exercise"}" data-id="${exercise.id}">${active ? `☑  RECORD SET ${loggedSets.length + 1} OF ${targetSets}` : "START EXERCISE"}</button>`}`}</article>`;
+}
+
+function renderRestFor() {
+  if (!state.rest) return "";
+  const remaining = Math.max(0, Math.ceil((state.rest.endsAt - Date.now()) / 1000));
+  return `<div class="panel rest-panel"><div class="system-label">REST BETWEEN SETS</div><div class="countdown" data-countdown>${formatTimer(remaining)}</div><p>Take a breather. Continue when you feel ready.</p><div class="timer-actions">${button("+30 SEC", "add-time:30")}${button("SKIP REST", "skip-rest", "ghost-btn")}</div></div>`;
+}
+
+function renderComplete() {
+  const workout = state.activeWorkout;
+  const key = workout.key;
+  const next = workout.nextWorkout || nextKey(key);
+  const definition = workouts[key];
+  const count = completedCount(workout, definition);
+  return `<section class="page"><div class="page-heading"><div><p class="eyebrow">SESSION SAVED</p><h1>WORKOUT COMPLETE 🎉</h1></div></div>
+    <div class="today-card completion-card"><div class="focus-banner"><span>MAIN FOCUS</span><strong>${escapeHtml(definition.focus.toUpperCase())}</strong></div>
+      <div class="summary-line"><span>Workout</span><strong>${escapeHtml(workoutLabel(key))}</strong></div>
+      <div class="summary-line"><span>Exercises</span><strong>${definition.exerciseIds.length}</strong></div>
+      <div class="summary-line"><span>Completed</span><strong>${count} / ${definition.exerciseIds.length}</strong></div>
+      <div class="summary-line"><span>Sets logged</span><strong>${workout.sets.length}</strong></div>
+      <div class="next-session"><small>NEXT GYM SESSION</small><strong>WORKOUT ${next} — ${escapeHtml(workouts[next].title.toUpperCase())}</strong></div>
+      <div class="rest-reminder"><strong>REST TODAY</strong><span>Take at least one rest day. Your next gym session stays Workout ${next}—whenever you are ready.</span></div>
+      <p class="completion-message">Good work showing up. Pick up the rotation next time.</p>
+      <button class="primary-btn wide-btn" data-action="finish-workout">DONE</button>
+    </div></section>`;
+}
+
+function renderLibrary() {
+  const filter = state.libraryFilter || "All";
+  const search = state.librarySearch || "";
+  const filtered = catalog.filter((exercise) => (filter === "All" || exercise.category === filter) && `${exercise.name} ${exercise.target} ${exercise.category}`.toLowerCase().includes(search.toLowerCase()));
+  const filters = ["All", "Shoulders", "Back", "Chest", "Legs", "Arms", "Core"];
+  return `<section class="page"><div class="page-heading"><div><p class="eyebrow">OFFLINE EXERCISE GUIDES</p><h1>EXERCISE<br>LIBRARY</h1></div><span class="accent tiny">${catalog.length} GUIDES</span></div>
+    <label class="library-search"><span>SEARCH EXERCISES</span><input id="library-search" class="number-input" type="search" placeholder="Try shoulder, back, chest…" value="${escapeHtml(search)}"></label>
+    <div class="filter-row library-filters">${filters.map((category) => button(category, `filter:${category}`, `choice-btn ${filter === category ? "active" : ""}`)).join("")}</div>
+    <div class="exercise-list">${filtered.map((exercise, index) => renderExerciseCard(exercise, index, null, true)).join("") || '<p class="muted">No exercises match that search. Try a different muscle or exercise name.</p>'}</div>
+  </section>`;
+}
+
+function renderProgress() {
+  const stats = totalStats();
+  const level = currentLevel();
+  const priorities = [["Shoulder Width", 5], ["Back Width", 5], ["Rear Delts", 4], ["Upper Chest", 4], ["Arms", 3], ["Legs", 3], ["Core", 3]];
+  const choices = catalog.slice(0, 8);
+  return `<section class="page"><div class="page-heading"><div><p class="eyebrow">YOUR TRAINING DASHBOARD</p><h1>PROGRESS</h1></div><span class="accent tiny">LEVEL ${level.level}</span></div>
+    <p class="section-label">V-TAPER PRIORITIES</p><div class="panel priorities-panel">${priorities.map(([label, score]) => `<div class="priority-row"><strong>${label}</strong><span class="stars" aria-label="${score} out of 5 stars">${"★".repeat(score)}<span>${"☆".repeat(5 - score)}</span></span></div>`).join("")}<p class="muted priority-explainer">The V-taper comes mainly from developing wider shoulders and lats while keeping the waist relatively lean. Your individual results and timeline will vary.</p></div>
+    <div class="effort-panel"><strong>EFFORT GUIDE · RIR</strong><p><b>RIR</b> means “reps in reserve.” Most sets, stop when you feel you could still do about <b>1–3 good reps</b>. You do not need to take every set to failure.</p></div>
+    <div class="effort-panel"><strong>PROGRESSIVE OVERLOAD</strong><p>Gradually add a rep or a little weight over time while keeping good form. Compare your “Last time” and “Current” exercise notes.</p></div>
+    <div class="grid-2 progress-stats"><div class="stat-card"><small>WORKOUTS</small><strong>${stats.workouts}</strong></div><div class="stat-card violet"><small>SETS LOGGED</small><strong>${stats.sets}</strong></div><div class="stat-card lime"><small>TOTAL REPS</small><strong>${stats.reps}</strong></div><div class="stat-card"><small>WORKING VOLUME</small><strong>${Math.round(stats.volume).toLocaleString()} <em>${state.profile.unit}</em></strong></div></div>
+    <p class="section-label">EXERCISE PROGRESSION</p><div class="panel"><div class="filter-row">${choices.map((exercise, index) => button(exercise.name, `chart-exercise:${exercise.id}`, `choice-btn ${index === 0 ? "active" : ""}`)).join("")}</div><div class="chart-wrap"><canvas id="progress-chart" aria-label="Exercise weight progress chart"></canvas></div></div>
+    <p class="section-label">WORKOUT HISTORY</p><div class="panel">${state.history.length ? [...state.history].reverse().map((workout, index) => `<button type="button" class="history-item" data-action="view-workout" data-index="${state.history.length - index - 1}"><span><strong>Workout ${escapeHtml(workout.key || "?")} · ${escapeHtml(workouts[workout.key]?.title || "Full Body")}</strong><small>${formatDate(workout.date)} · ${workout.sets.length} sets · ${workout.duration || 0} min</small></span><b>+${workout.xp || 0} XP</b></button>`).join("") : '<p class="muted">Your workout history will appear here.</p>'}</div>
+  </section>`;
+}
+
 function renderSettings() {
-  return `<section class="page"><div class="page-heading"><div><p class="eyebrow">SYSTEM CONFIG</p><h1>SETTINGS</h1></div></div><p class="section-label">PREFERENCES</p><div class="panel settings-list">${settingToggle("XP SYSTEM", "Motivational levels and quest rewards", "xpEnabled")}${settingToggle("VIBRATION", "Rest timer alerts when supported", "vibration")}${settingToggle("ANIMATIONS", "Subtle interface motion", "animations")}<div class="setting-row"><div><label>UNIT</label><small>Weight display preference</small></div><select id="unit-select" class="number-input" style="width:90px"><option ${state.profile.unit === "kg" ? "selected" : ""}>kg</option><option ${state.profile.unit === "lb" ? "selected" : ""}>lb</option></select></div></div><p class="section-label">DATA CONTROL</p><div class="panel"><div class="action-row">${button("EXPORT DATA", "export-data", "primary-btn")}${button("IMPORT DATA", "import-data", "ghost-btn")}</div><div class="action-row" style="margin-top:10px">${button("EDIT PROFILE", "edit-profile", "ghost-btn")}${button("RESET DATA", "reset-data", "danger-btn")}</div></div><p class="section-label">WORKOUT SCHEDULE</p><div class="panel"><div class="grid-2">${[1, 2, 3, 4, 5, 6, 0].map((day) => `<button class="choice-btn ${state.schedule[day] ? "active" : ""}" data-action="toggle-day" data-day="${day}">${dayName(day).slice(0, 3).toUpperCase()}</button>`).join("")}</div><p class="muted tiny" style="margin-bottom:0">Active days: ${scheduledDays().map(dayName).join(", ")}</p></div><input type="file" id="import-file" accept="application/json" hidden></section>`;
+  return `<section class="page"><div class="page-heading"><div><p class="eyebrow">PERSONAL WORKOUT SYSTEM</p><h1>SETTINGS</h1></div></div>
+    <p class="section-label">ROTATION</p><div class="panel settings-rotation"><div><small>NEXT SESSION</small><strong>WORKOUT ${state.currentWorkout} — ${escapeHtml(workouts[state.currentWorkout].title)}</strong></div>${button("RESET ROTATION", "reset-rotation", "danger-btn")}</div>
+    <p class="section-label">PREFERENCES</p><div class="panel settings-list">${settingToggle("BEGINNER MODE", "Show clear cues, explanations, and form reminders", "beginnerMode")}${settingToggle("XP SYSTEM", "Optional workout levels and rewards", "xpEnabled")}${settingToggle("VIBRATION", "Rest timer alert when supported", "vibration")}${settingToggle("ANIMATIONS", "Subtle interface motion", "animations")}
+      <div class="setting-row"><div><label>WEIGHT UNIT</label><small>Display preference for workout records</small></div><select id="unit-select" class="number-input" style="width:90px"><option ${state.profile.unit === "kg" ? "selected" : ""}>kg</option><option ${state.profile.unit === "lb" ? "selected" : ""}>lb</option></select></div></div>
+    <p class="section-label">YOUR PROFILE & DATA</p><div class="panel"><div class="action-row">${button("EDIT PROFILE", "edit-profile", "ghost-btn")}${button("EXPORT DATA", "export-data", "primary-btn")}${button("IMPORT DATA", "import-data", "ghost-btn")}</div><div class="action-row" style="margin-top:10px">${button("RESET ALL DATA", "reset-data", "danger-btn")}</div></div>
+    <p class="offline-note">Your workouts, exercise illustrations, and saved progress are stored on this device. The app shell is available offline after the first visit.</p>
+    <input type="file" id="import-file" accept="application/json" hidden>
+  </section>`;
 }
+
 function settingToggle(label, hint, key) {
-  return `<div class="setting-row"><div><label>${label}</label><small>${hint}</small></div><button class="toggle ${state.settings[key] ? "on" : ""}" data-action="toggle-setting" data-key="${key}" aria-label="Toggle ${label}"></button></div>`;
+  return `<div class="setting-row"><div><label>${label}</label><small>${hint}</small></div><button type="button" class="toggle ${state.settings[key] ? "on" : ""}" data-action="toggle-setting" data-key="${key}" aria-label="Toggle ${label}" aria-pressed="${state.settings[key]}"></button></div>`;
 }
+
 function formatTimer(seconds) {
   return `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
 }
 
 function startWorkout() {
-  state.activeWorkout = { startedAt: Date.now(), sets: [], complete: false };
-  state.rest = null;
-  saveState();
+  if (state.activeWorkout?.complete) {
+    changeRoute("workout");
+    return;
+  }
+  if (!state.activeWorkout) {
+    state.activeWorkout = { key: state.currentWorkout, startedAt: Date.now(), sets: [], exerciseOptions: {}, focusedExercise: null, complete: false };
+    state.rest = null;
+    saveState();
+  }
   changeRoute("workout");
-  renderWarmupModal();
+  if (!state.activeWorkout.warmupSeen) renderWarmupModal();
 }
+
 function renderWarmupModal() {
-  const warmups = [
-    {
-      phase: "01 // RAISE TEMPERATURE",
-      title: "EASY CARDIO",
-      detail: "5-7 minutes // brisk walk or bike",
-      image: "Walking_Treadmill/0.jpg",
-    },
-    {
-      phase: "02 // MOBILITY",
-      title: "ARM CIRCLES",
-      detail: "10 forward + 10 backward",
-      image: "Arm_Circles/0.jpg",
-    },
-    {
-      phase: "03 // DYNAMIC LOWER BODY",
-      title: "BODYWEIGHT SQUAT",
-      detail: "2 sets // 10 controlled reps",
-      image: "Bodyweight_Squat/0.jpg",
-    },
-    {
-      phase: "03 // DYNAMIC LOWER BODY",
-      title: "WALKING LUNGE",
-      detail: "1 set // 8 reps each leg",
-      image: "Bodyweight_Walking_Lunge/0.jpg",
-    },
-    {
-      phase: "04 // CORE ACTIVATION",
-      title: "PLANK",
-      detail: "2 sets // 20-30 seconds",
-      image: "Plank/0.jpg",
-    },
-    {
-      phase: "05 // SPECIFIC RAMP-UP",
-      title: "LEG PRESS",
-      detail: "1 light set // 10-12 reps",
-      image: "Leg_Press/0.jpg",
-    },
-    {
-      phase: "05 // SPECIFIC RAMP-UP",
-      title: "INCLINE PRESS",
-      detail: "1 light set // 10-12 reps",
-      image: "Barbell_Incline_Bench_Press_-_Medium_Grip/0.jpg",
-    },
-    {
-      phase: "05 // SPECIFIC RAMP-UP",
-      title: "LAT PULLDOWN",
-      detail: "1 light set // 10-12 reps",
-      image: "Wide-Grip_Lat_Pulldown/0.jpg",
-    },
-  ];
-  document.querySelector("#modal-root").innerHTML =
-    `<div class="modal-backdrop"><div class="modal"><p class="eyebrow">PRE-QUEST PROTOCOL</p><h2>FULL BODY WARM-UP</h2><p>Complete this sequence in order. Use easy effort, controlled movement, and stop if you feel sharp pain. Warm-up work is not included in volume.</p><div class="warmup-list">${warmups
-      .map(
-        (warmup) =>
-          `<label class="warmup-item"><img src="https://raw.githubusercontent.com/yuhonas/free-exercise-db/main/exercises/${warmup.image}" alt="${warmup.title} warm-up" loading="lazy"><span><small class="warmup-phase">${warmup.phase}</small><strong>${warmup.title}</strong><small>${warmup.detail}</small></span><input type="checkbox"></label>`,
-      )
-      .join("")}</div><div class="action-row" style="margin-top:16px">${button("SKIP WARM-UP", "close-modal", "ghost-btn")}<button class="primary-btn" type="button" data-action="close-modal">BEGIN QUEST</button></div></div></div>`;
+  const key = state.activeWorkout.key;
+  const focusTip = key === "A" ? "Add a few shoulder circles and gentle arm raises." : "Add a few easy, controlled warm-up sets for your first lifts.";
+  document.querySelector("#modal-root").innerHTML = `<div class="modal-backdrop"><div class="modal"><p class="eyebrow">BEFORE YOU BEGIN</p><h2>QUICK WARM-UP</h2><p>5–10 minutes of light cardio, a little mobility, then light warm-up sets before your working sets. ${focusTip}</p><p>Warm-ups should feel easy. Stop if something hurts.</p><div class="action-row"><button type="button" class="primary-btn" data-action="begin-workout">START WORKOUT</button></div></div></div>`;
 }
-function completeSet(button) {
-  if (!state.activeWorkout) startWorkout();
-  const card = button.closest(".exercise-card");
-  const id = card.dataset.exercise;
-  const exercise = state.exercises.find((item) => item.id === id);
+
+function beginWorkout() {
+  state.activeWorkout.warmupSeen = true;
+  saveState();
+  document.querySelector("#modal-root").innerHTML = "";
+  render();
+}
+
+function startExercise(id, target) {
+  if (!state.activeWorkout) {
+    state.activeWorkout = { key: state.currentWorkout, startedAt: Date.now(), sets: [], exerciseOptions: {}, focusedExercise: id, complete: false, warmupSeen: true };
+  }
+  state.activeWorkout.focusedExercise = id;
+  state.activeWorkout.exerciseOptions ||= {};
+  const option = target.closest(".exercise-card");
+  const weight = option.querySelector(".weight-input").value;
+  const reps = option.querySelector(".reps-input").value;
+  saveState();
+  render();
+  scrollToExercise(id);
+  const card = document.querySelector(`#exercise-${id}`);
+  if (weight) card.querySelector(".weight-input").value = weight;
+  if (reps) card.querySelector(".reps-input").value = reps;
+}
+
+function scrollToExercise(id) {
+  requestAnimationFrame(() => document.querySelector(`#exercise-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" }));
+}
+
+function completeSet(target) {
+  const card = target.closest(".exercise-card");
+  const id = target.dataset.id;
+  const exercise = getExercise(id);
   const weight = Number(card.querySelector(".weight-input").value || 0);
   const reps = Number(card.querySelector(".reps-input").value || 0);
-  if (!reps) return showToast("Enter reps before completing the set.");
+  if (!Number.isFinite(weight) || weight < 0) return showToast("Enter a valid weight.");
+  if (!Number.isInteger(reps) || reps < exercise.min || reps > exercise.max) return showToast(`Enter ${exercise.min}–${exercise.max} reps.`);
+  const loggedSets = state.activeWorkout.sets.filter((set) => set.exerciseId === id);
+  const targetSets = workoutSets(id, state.activeWorkout.key);
+  if (loggedSets.length >= targetSets) return showToast("This exercise is already complete.");
   const set = {
     exerciseId: id,
-    name: exercise.name,
+    name: state.activeWorkout.exerciseOptions?.[id] || exercise.name,
     weight,
     reps,
     timestamp: Date.now(),
   };
   state.activeWorkout.sets.push(set);
-  const previousBest = Math.max(
-    0,
-    ...state.history.flatMap((workout) =>
-      (workout.sets || [])
-        .filter((item) => item.exerciseId === id)
-        .map((item) => item.weight * item.reps),
-    ),
-  );
-  if (weight * reps > previousBest && weight > 0) {
-    state.records.push({ name: exercise.name, weight, reps, date: Date.now() });
+  const previousBest = Math.max(0, ...state.history.flatMap((workout) => (workout.sets || []).filter((item) => item.exerciseId === id).map((item) => item.weight * item.reps)));
+  const isPersonalBest = weight * reps > previousBest && weight > 0;
+  if (isPersonalBest) {
+    state.records.push({ name: set.name, weight, reps, date: Date.now() });
     awardXP(50);
-    showToast("NEW RECORD // +50 XP");
   } else {
     awardXP(5);
-    showToast("SET SAVED // REST STARTED");
   }
+  const exerciseDone = loggedSets.length + 1 >= targetSets;
+  const definition = workouts[state.activeWorkout.key];
+  const nextExercise = definition.exerciseIds.find((exerciseId) => {
+    const candidate = getExercise(exerciseId);
+    const count = state.activeWorkout.sets.filter((logged) => logged.exerciseId === exerciseId).length;
+    return count < workoutSets(exerciseId, state.activeWorkout.key);
+  });
+  if (exerciseDone) state.activeWorkout.focusedExercise = nextExercise || null;
   state.rest = { exerciseId: id, endsAt: Date.now() + exercise.rest * 1000 };
   saveState();
   render();
   startTimer();
+  showToast(isPersonalBest ? "NEW PERSONAL BEST · SET SAVED" : exerciseDone ? "EXERCISE COMPLETE · NEXT UP" : "SET SAVED · REST STARTED");
+  if (exerciseDone && nextExercise) scrollToExercise(nextExercise);
 }
-function awardXP(amount) {
-  if (state.settings.xpEnabled) {
-    state.xp += amount;
-    state.level = currentLevel().level;
+
+function setAlternative(id, alternative) {
+  if (state.activeWorkout) {
+    state.activeWorkout.exerciseOptions ||= {};
+    state.activeWorkout.exerciseOptions[id] = alternative;
+    saveState();
+    document.querySelector(`#exercise-${id} .exercise-title-wrap h2`).textContent = alternative;
+    showToast(`${alternative} selected.`);
+    return;
   }
+  showToast(`${alternative} is an option for your next workout.`);
 }
+
+function awardXP(amount) {
+  if (!state.settings.xpEnabled) return;
+  state.xp += amount;
+  state.level = currentLevel().level;
+}
+
 function startTimer() {
   clearInterval(timerHandle);
   timerHandle = setInterval(() => {
     if (!state.rest) return clearInterval(timerHandle);
-    const remaining = Math.max(
-      0,
-      Math.ceil((state.rest.endsAt - Date.now()) / 1000),
-    );
-    const countdown = document.querySelector(
-      `[data-countdown="${state.rest.exerciseId}"]`,
-    );
+    const remaining = Math.max(0, Math.ceil((state.rest.endsAt - Date.now()) / 1000));
+    const countdown = document.querySelector("[data-countdown]");
     if (countdown) countdown.textContent = formatTimer(remaining);
     if (!remaining) {
       clearInterval(timerHandle);
-      if (state.settings.vibration && navigator.vibrate)
-        navigator.vibrate([200, 100, 200]);
-      showToast("REST TIMER COMPLETE");
+      state.rest = null;
+      saveState();
+      if (state.settings.vibration && navigator.vibrate) navigator.vibrate([200, 100, 200]);
+      showToast("REST COMPLETE · CONTINUE WHEN READY");
+      render();
     }
   }, 500);
 }
+
 function skipRest() {
   state.rest = null;
   clearInterval(timerHandle);
   saveState();
   render();
 }
+
 function addTime(seconds) {
-  if (state.rest) {
-    state.rest.endsAt += seconds * 1000;
-    saveState();
-    render();
-    startTimer();
-  }
+  if (!state.rest) return;
+  state.rest.endsAt += seconds * 1000;
+  saveState();
+  render();
+  startTimer();
 }
+
 function endWorkout() {
-  if (!state.activeWorkout?.sets.length)
-    return showToast("Complete at least one set first.");
-  state.activeWorkout.complete = true;
-  state.activeWorkout.duration = Math.max(
-    1,
-    Math.round((Date.now() - state.activeWorkout.startedAt) / 60000),
-  );
+  if (!state.activeWorkout?.sets.length) return showToast("Log at least one set before finishing.");
   const workout = state.activeWorkout;
+  workout.complete = true;
+  workout.duration = Math.max(1, Math.round((Date.now() - workout.startedAt) / 60000));
+  workout.date = Date.now();
+  workout.nextWorkout = workout.resetRotationAfter ? "A" : nextKey(workout.key);
   workout.xp = workout.sets.length * 20 + 100;
   awardXP(workout.xp);
   state.history.push(workout);
-  state.activeWorkout = workout;
+  state.lastWorkout = { key: workout.key, date: workout.date };
+  state.currentWorkout = workout.nextWorkout;
   state.rest = null;
+  clearInterval(timerHandle);
   saveState();
   render();
 }
+
 function finishWorkout() {
   state.activeWorkout = null;
+  state.rest = null;
   saveState();
   changeRoute("home");
 }
-function renderCompleteModal(workout) {
-  document.querySelector("#modal-root").innerHTML =
-    `<div class="modal-backdrop"><div class="modal"><p class="eyebrow">SYSTEM MESSAGE</p><h2>WORKOUT DETAILS</h2><p>${formatDate(workout.date)} // ${workout.sets.length} sets</p>${workout.sets.map((set) => `<div class="recent-row"><div><h3>${set.name}</h3><p>${set.weight} ${state.profile.unit} x ${set.reps}</p></div><span class="accent">${set.reps >= (state.exercises.find((ex) => ex.id === set.exerciseId)?.max || 99) ? "TOP RANGE" : ""}</span></div>`).join("")}<div class="action-row" style="margin-top:16px">${button("CLOSE", "close-modal", "primary-btn")}</div></div></div>`;
+
+function renderWorkoutDetails(workout) {
+  if (!workout) return;
+  document.querySelector("#modal-root").innerHTML = `<div class="modal-backdrop"><div class="modal"><p class="eyebrow">SAVED WORKOUT</p><h2>WORKOUT ${escapeHtml(workout.key || "?")}</h2><p>${formatDate(workout.date)} · ${workout.sets.length} working sets</p>${workout.sets.map((set) => `<div class="recent-row"><div><h3>${escapeHtml(set.name)}</h3><p>${set.weight} ${state.profile.unit} × ${set.reps} reps</p></div></div>`).join("")}<div class="action-row" style="margin-top:16px">${button("CLOSE", "close-modal", "primary-btn")}</div></div></div>`;
 }
+
 function renderSetupModal() {
-  document.querySelector("#modal-root").innerHTML =
-    `<div class="modal-backdrop"><div class="modal"><p class="eyebrow">FIRST LAUNCH // SYSTEM INIT</p><h2>WELCOME, HUNTER.</h2><p>Your personal workout system is ready. Set up only what you want; everything can be changed later.</p><form id="setup-form" class="form-grid"><label>NICKNAME<input name="name" placeholder="Optional"></label><label>BODY WEIGHT<input name="bodyWeight" type="number" placeholder="Optional"></label><label>PREFERRED UNIT<select name="unit"><option>kg</option><option>lb</option></select></label><label class="setting-row"><span>ENABLE XP SYSTEM</span><input name="xpEnabled" type="checkbox" checked></label><button class="primary-btn" type="submit">INITIALIZE SYSTEM</button></form></div></div>`;
+  document.querySelector("#modal-root").innerHTML = `<div class="modal-backdrop"><div class="modal"><p class="eyebrow">WELCOME TO YOUR WORKOUT GUIDE</p><h2>LET'S SET UP</h2><p>Your A → B → C workout rotation and exercise guides are ready. Add a name or preferred weight unit if you like.</p><form id="setup-form" class="form-grid"><label>NICKNAME (OPTIONAL)<input name="name" placeholder="Your name"></label><label>WEIGHT UNIT<select name="unit"><option>kg</option><option>lb</option></select></label><button class="primary-btn" type="submit">OPEN MY WORKOUT</button></form></div></div>`;
 }
+
 function editProfile() {
-  document.querySelector("#modal-root").innerHTML =
-    `<div class="modal-backdrop"><div class="modal"><p class="eyebrow">PROFILE CONFIG</p><h2>HUNTER PROFILE</h2><form id="profile-form" class="form-grid"><label>NICKNAME<input name="name" value="${state.profile.name}"></label><label>AGE<input name="age" type="number" value="${state.profile.age}"></label><label>HEIGHT<input name="height" type="number" value="${state.profile.height}"></label><label>BODY WEIGHT<input name="bodyWeight" type="number" value="${state.profile.bodyWeight}"></label><button class="primary-btn" type="submit">SAVE PROFILE</button></form></div></div>`;
+  document.querySelector("#modal-root").innerHTML = `<div class="modal-backdrop"><div class="modal"><p class="eyebrow">YOUR PROFILE</p><h2>EDIT DETAILS</h2><form id="profile-form" class="form-grid"><label>NICKNAME<input name="name" value="${escapeHtml(state.profile.name)}"></label><label>AGE<input name="age" type="number" value="${escapeHtml(state.profile.age)}"></label><label>HEIGHT<input name="height" type="number" value="${escapeHtml(state.profile.height)}"></label><label>BODY WEIGHT<input name="bodyWeight" type="number" value="${escapeHtml(state.profile.bodyWeight)}"></label><button class="primary-btn" type="submit">SAVE PROFILE</button></form></div></div>`;
 }
+
 function drawChart() {
   const canvas = document.querySelector("#progress-chart");
   if (!canvas) return;
   const context = canvas.getContext("2d");
   const ratio = window.devicePixelRatio || 1;
-  const width = canvas.clientWidth * ratio;
-  const height = canvas.clientHeight * ratio;
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = canvas.clientWidth * ratio;
+  canvas.height = canvas.clientHeight * ratio;
   context.scale(ratio, ratio);
-  const w = canvas.clientWidth;
-  const h = canvas.clientHeight;
-  context.clearRect(0, 0, w, h);
-  const id =
-    document.querySelector(".choice-btn.active")?.dataset.id ||
-    state.exercises[0].id;
-  const points = state.history
-    .flatMap((workout) =>
-      (workout.sets || []).filter((set) => set.exerciseId === id),
-    )
-    .map((set) => Number(set.weight))
-    .filter(Boolean);
-  const values = points.length ? points : [0, 0];
-  const max = Math.max(...values, 1);
-  context.strokeStyle = "rgba(110,226,255,.12)";
-  context.lineWidth = 1;
-  for (let i = 1; i < 5; i++) {
-    const y = h - (i * h) / 5;
-    context.beginPath();
-    context.moveTo(0, y);
-    context.lineTo(w, y);
-    context.stroke();
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  context.clearRect(0, 0, width, height);
+  const id = document.querySelector("[data-action^='chart-exercise:'].active")?.dataset.id || catalog[0].id;
+  const values = state.history.flatMap((workout) => (workout.sets || []).filter((set) => set.exerciseId === id)).map((set) => Number(set.weight)).filter(Number.isFinite);
+  if (!values.length) {
+    context.fillStyle = "#9baec0";
+    context.font = "13px sans-serif";
+    context.fillText("Log an exercise to see your progress here.", 8, 30);
+    return;
   }
-  context.strokeStyle = "#6be7ff";
+  const max = Math.max(...values, 1);
+  context.strokeStyle = "rgba(110,226,255,.18)";
+  for (let index = 1; index < 5; index++) {
+    const y = height - (index * height) / 5;
+    context.beginPath(); context.moveTo(0, y); context.lineTo(width, y); context.stroke();
+  }
+  context.strokeStyle = "#f02f43";
   context.lineWidth = 3;
   context.beginPath();
   values.forEach((value, index) => {
-    const x = values.length === 1 ? w / 2 : (index * w) / (values.length - 1);
-    const y = h - (value / max) * (h - 20) - 10;
+    const x = values.length === 1 ? width / 2 : (index * width) / (values.length - 1);
+    const y = height - (value / max) * (height - 20) - 10;
     index ? context.lineTo(x, y) : context.moveTo(x, y);
   });
   context.stroke();
   values.forEach((value, index) => {
-    const x = values.length === 1 ? w / 2 : (index * w) / (values.length - 1);
-    const y = h - (value / max) * (h - 20) - 10;
-    context.fillStyle = "#07101b";
-    context.beginPath();
-    context.arc(x, y, 5, 0, Math.PI * 2);
-    context.fill();
-    context.strokeStyle = "#6be7ff";
-    context.stroke();
+    const x = values.length === 1 ? width / 2 : (index * width) / (values.length - 1);
+    const y = height - (value / max) * (height - 20) - 10;
+    context.fillStyle = "#07101b"; context.beginPath(); context.arc(x, y, 5, 0, Math.PI * 2); context.fill();
+    context.strokeStyle = "#f02f43"; context.stroke();
   });
+}
+
+function exportData() {
+  const file = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "v-taper-workout-data.json";
+  link.click();
+  URL.revokeObjectURL(url);
 }
 
 document.addEventListener("click", (event) => {
@@ -618,101 +923,120 @@ document.addEventListener("click", (event) => {
   if (!target) return;
   const action = target.dataset.action;
   if (action === "start-workout") return startWorkout();
+  if (action === "start-exercise") return startExercise(target.dataset.id, target);
+  if (action === "begin-workout") return beginWorkout();
   if (action === "complete-set") return completeSet(target);
   if (action === "end-workout") return endWorkout();
   if (action === "finish-workout") return finishWorkout();
-  if (action === "history") return changeRoute("history");
   if (action === "skip-rest") return skipRest();
-  if (action.startsWith("add-time:"))
-    return addTime(Number(action.split(":")[1]));
+  if (action.startsWith("add-time:")) return addTime(Number(action.split(":")[1]));
   if (action === "gym-mode") {
     document.body.classList.toggle("gym-mode");
-    target.textContent = document.body.classList.contains("gym-mode")
-      ? "EXIT GYM MODE"
-      : "GYM MODE";
+    target.textContent = document.body.classList.contains("gym-mode") ? "EXIT GYM MODE" : "GYM MODE";
     return;
   }
   if (action === "toggle-setting") {
     state.settings[target.dataset.key] = !state.settings[target.dataset.key];
-    saveState();
-    render();
+    saveState(); render(); return;
+  }
+  if (action === "reset-rotation") {
+    document.querySelector("#modal-root").innerHTML = `<div class="modal-backdrop"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="reset-rotation-title"><p class="eyebrow">ROTATION SETTINGS</p><h2 id="reset-rotation-title">RESET TO WORKOUT A?</h2><p>Your next gym session will be Workout A. Saved workout history and progress stay on this device.${state.activeWorkout && !state.activeWorkout.complete ? " Your current workout stays in progress." : ""}</p><div class="action-row">${button("KEEP CURRENT ROTATION", "close-modal", "ghost-btn")}${button("RESET TO A", "confirm-reset-rotation", "danger-btn")}</div></div></div>`;
     return;
   }
-  if (action === "toggle-day") {
-    state.schedule[target.dataset.day] = !state.schedule[target.dataset.day];
-    saveState();
-    render();
-    return;
-  }
-  if (action === "export-data") return exportData();
-  if (action === "import-data")
-    return document.querySelector("#import-file").click();
-  if (action === "reset-data") {
-    if (confirm("Reset all workout data?")) {
-      localStorage.removeItem(STORAGE_KEY);
-      state = structuredClone(initialState);
-      render();
+  if (action === "confirm-reset-rotation") {
+    state.currentWorkout = "A";
+    if (state.activeWorkout && !state.activeWorkout.complete) state.activeWorkout.resetRotationAfter = true;
+    else {
+      state.activeWorkout = null;
+      state.rest = null;
     }
+    document.querySelector("#modal-root").innerHTML = "";
+    saveState(); render(); showToast("ROTATION RESET · WORKOUT A");
     return;
+  }
+  if (action === "reset-data") {
+    if (!confirm("Reset all workout history, settings, and rotation on this device? This cannot be undone.")) return;
+    localStorage.removeItem(STORAGE_KEY);
+    state = clone(initialState); render(); return;
   }
   if (action === "edit-profile") return editProfile();
-  if (action === "view-workout")
-    return renderCompleteModal(state.history[Number(target.dataset.index)]);
+  if (action === "view-workout") return renderWorkoutDetails(state.history[Number(target.dataset.index)]);
+  if (action === "export-data") return exportData();
+  if (action === "import-data") return document.querySelector("#import-file").click();
   if (action === "close-modal") {
-    document.querySelector("#modal-root").innerHTML = "";
+    if (state.activeWorkout) beginWorkout();
+    else document.querySelector("#modal-root").innerHTML = "";
     return;
   }
-  if (action === "chart-exercise") {
-    document
-      .querySelectorAll('[data-action="chart-exercise"]')
-      .forEach((button) => button.classList.remove("active"));
+  if (action === "set-alternative") return setAlternative(target.dataset.id, target.dataset.value);
+  if (action.startsWith("filter:")) {
+    state.libraryFilter = action.slice(7);
+    render();
+    return;
+  }
+  if (action.startsWith("chart-exercise:")) {
+    document.querySelectorAll("[data-action^='chart-exercise:']").forEach((button) => button.classList.remove("active"));
     target.classList.add("active");
     drawChart();
   }
 });
+
+document.addEventListener("error", (event) => {
+  const image = event.target;
+  if (!(image instanceof HTMLImageElement) || !image.classList.contains("exercise-photo")) return;
+  image.hidden = true;
+  const visual = image.closest(".exercise-visual");
+  if (!visual.querySelector(".exercise-photo:not([hidden])")) visual.querySelector(".visual-fallback").hidden = false;
+}, true);
+
 document.querySelector(".bottom-nav").addEventListener("click", (event) => {
   const item = event.target.closest("[data-route]");
   if (item) changeRoute(item.dataset.route);
 });
+
 document.querySelector("#soundToggle").addEventListener("click", () => {
   state.settings.sound = !state.settings.sound;
-  saveState();
-  document.querySelector("#soundToggle").textContent = state.settings.sound
-    ? "VOL"
-    : "MUTE";
+  saveState(); render();
   showToast(state.settings.sound ? "SOUND ON" : "SOUND OFF");
 });
+
+document.addEventListener("input", (event) => {
+  if (event.target.id === "library-search") {
+    state.librarySearch = event.target.value;
+    const position = event.target.selectionStart;
+    render();
+    const search = document.querySelector("#library-search");
+    search.focus();
+    search.setSelectionRange(position, position);
+  }
+});
+
 document.addEventListener("submit", (event) => {
   if (event.target.id === "setup-form") {
     event.preventDefault();
     const form = new FormData(event.target);
     state.profile.name = form.get("name");
-    state.profile.bodyWeight = form.get("bodyWeight");
     state.profile.unit = form.get("unit");
-    state.settings.xpEnabled = form.get("xpEnabled") === "on";
     state.setupComplete = true;
     saveState();
     document.querySelector("#modal-root").innerHTML = "";
     render();
-    showToast("SYSTEM INITIALIZED");
+    return;
   }
   if (event.target.id === "profile-form") {
     event.preventDefault();
     const form = new FormData(event.target);
-    ["name", "age", "height", "bodyWeight"].forEach(
-      (key) => (state.profile[key] = form.get(key)),
-    );
+    ["name", "age", "height", "bodyWeight"].forEach((key) => { state.profile[key] = form.get(key); });
     saveState();
     document.querySelector("#modal-root").innerHTML = "";
     render();
-    showToast("PROFILE SAVED");
   }
 });
+
 document.addEventListener("change", (event) => {
   if (event.target.id === "unit-select") {
     state.profile.unit = event.target.value;
-    saveState();
-    render();
+    saveState(); render(); return;
   }
   if (event.target.id === "import-file") {
     const file = event.target.files[0];
@@ -720,19 +1044,22 @@ document.addEventListener("change", (event) => {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        state = { ...initialState, ...JSON.parse(reader.result) };
-        saveState();
-        render();
-        showToast("DATA IMPORTED");
-      } catch {
-        showToast("IMPORT FAILED");
+        const imported = JSON.parse(reader.result);
+        state = { ...clone(initialState), ...imported, profile: { ...initialState.profile, ...imported.profile }, settings: { ...initialState.settings, ...imported.settings }, exercises: catalog };
+        state.currentWorkout = WORKOUT_ORDER.includes(state.currentWorkout) ? state.currentWorkout : "A";
+        if (state.activeWorkout && !WORKOUT_ORDER.includes(state.activeWorkout.key)) state.activeWorkout.key = state.currentWorkout;
+        saveState(); render(); showToast("DATA IMPORTED");
+      } catch (error) {
+        console.error("Unable to import workout data.", error);
+        showToast("Import failed. Choose a valid workout data file.");
       }
     };
     reader.readAsText(file);
   }
 });
-if ("serviceWorker" in navigator)
-  window.addEventListener("load", () =>
-    navigator.serviceWorker.register("sw.js"),
-  );
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch((error) => console.error("Offline app setup failed.", error)));
+}
+
 render();
